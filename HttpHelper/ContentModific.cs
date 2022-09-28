@@ -6,10 +6,10 @@ using FreeHttp.AutoTest;
 
 namespace FreeHttp.HttpHelper
 {
-    public enum ContentModificMode
+    public enum ContentModifiedMode
     {
         NoChange,
-        KeyVauleReplace,
+        KeyValueReplace,
         EntireReplace,
         RegexReplace,
         HexReplace,
@@ -22,7 +22,7 @@ namespace FreeHttp.HttpHelper
     {
         public ContentModific()
         {
-            ModificMode = ContentModificMode.NoChange;
+            ModifiedMode = ContentModifiedMode.NoChange;
             TargetKey = null;
             ReplaceContent = null;
         }
@@ -31,14 +31,14 @@ namespace FreeHttp.HttpHelper
         {
             if (string.IsNullOrEmpty(targetKey))
             {
-                ModificMode = ContentModificMode.EntireReplace;
+                ModifiedMode = ContentModifiedMode.EntireReplace;
                 TargetKey = null;
             }
             else
             {
                 if (targetKey.StartsWith("<regex>"))
                 {
-                    ModificMode = ContentModificMode.RegexReplace;
+                    ModifiedMode = ContentModifiedMode.RegexReplace;
                     TargetKey = targetKey;
                 }
                 else if (targetKey.StartsWith("<hex>"))
@@ -62,7 +62,7 @@ namespace FreeHttp.HttpHelper
                                 ex.Message), ex);
                     }
 
-                    ModificMode = ContentModificMode.HexReplace;
+                    ModifiedMode = ContentModifiedMode.HexReplace;
                 }
                 else if (targetKey.StartsWith("<recode>"))
                 {
@@ -80,23 +80,23 @@ namespace FreeHttp.HttpHelper
                                 ex.Message), ex);
                     }
 
-                    ModificMode = ContentModificMode.ReCode;
+                    ModifiedMode = ContentModifiedMode.ReCode;
                     TargetKey = targetKey;
                 }
                 else
                 {
-                    ModificMode = ContentModificMode.KeyVauleReplace;
+                    ModifiedMode = ContentModifiedMode.KeyValueReplace;
                     TargetKey = targetKey;
                 }
             }
 
             //set the ReplaceContent
-            if (ModificMode == ContentModificMode.EntireReplace && string.IsNullOrEmpty(replaceContent))
+            if (ModifiedMode == ContentModifiedMode.EntireReplace && string.IsNullOrEmpty(replaceContent))
             {
-                ModificMode = ContentModificMode.NoChange;
+                ModifiedMode = ContentModifiedMode.NoChange;
                 ReplaceContent = null;
             }
-            else if (ModificMode == ContentModificMode.ReCode)
+            else if (ModifiedMode == ContentModifiedMode.ReCode)
             {
                 ReplaceContent = null;
             }
@@ -106,7 +106,7 @@ namespace FreeHttp.HttpHelper
             }
         }
 
-        [DataMember] public ContentModificMode ModificMode { get; set; }
+        [DataMember] public ContentModifiedMode ModifiedMode { get; set; }
 
         [DataMember] public string TargetKey { get; set; }
 
@@ -114,36 +114,35 @@ namespace FreeHttp.HttpHelper
 
         public string GetFinalContent(string sourceContent)
         {
-            string finalContent = null;
-            switch (ModificMode)
+            string finalContent;
+            switch (ModifiedMode)
             {
-                case ContentModificMode.NoChange:
+                case ContentModifiedMode.NoChange:
                     finalContent = sourceContent;
                     break;
-                case ContentModificMode.EntireReplace:
+                case ContentModifiedMode.EntireReplace:
                     finalContent = ReplaceContent;
                     break;
-                case ContentModificMode.KeyVauleReplace:
+                case ContentModifiedMode.KeyValueReplace:
                     finalContent = sourceContent.Replace(TargetKey, ReplaceContent);
                     break;
-                case ContentModificMode.RegexReplace:
+                case ContentModifiedMode.RegexReplace:
                     try
                     {
                         finalContent = Regex.Replace(sourceContent, TargetKey.Remove(0, 8), ReplaceContent);
                     }
                     catch (Exception ex)
                     {
-                        finalContent = string.Format("RegexReplace [{0}] GetFinalContent fail :{1}",
-                            TargetKey.Remove(0, 7), ex.Message);
+                        finalContent = $"RegexReplace [{TargetKey.Remove(0, 7)}] GetFinalContent fail :{ex.Message}";
                     }
 
                     break;
-                case ContentModificMode.HexReplace:
+                case ContentModifiedMode.HexReplace:
                     throw new Exception("your should implement HexReplace with anther GetFinalContent overload");
-                case ContentModificMode.ReCode:
+                case ContentModifiedMode.ReCode:
                     throw new Exception("your should implement Recode with GetRecodeContent");
                 default:
-                    throw new Exception("not support ContentModificMode");
+                    throw new Exception("not support ContentModifiedMode");
             }
 
             return finalContent;
@@ -151,80 +150,80 @@ namespace FreeHttp.HttpHelper
 
         public byte[] GetFinalContent(byte[] sourceContent)
         {
-            switch (ModificMode)
+            switch (ModifiedMode)
             {
-                case ContentModificMode.NoChange:
-                case ContentModificMode.EntireReplace:
-                case ContentModificMode.KeyVauleReplace:
-                case ContentModificMode.RegexReplace:
-                case ContentModificMode.ReCode:
+                case ContentModifiedMode.NoChange:
+                case ContentModifiedMode.EntireReplace:
+                case ContentModifiedMode.KeyValueReplace:
+                case ContentModifiedMode.RegexReplace:
+                case ContentModifiedMode.ReCode:
                     throw new Exception("this implement of GetFinalContent is only for HexReplace");
-                case ContentModificMode.HexReplace:
+                case ContentModifiedMode.HexReplace:
                     var replaceContentBytes = MyBytes.HexStringToByte(ReplaceContent, HexDecimal.hex16);
                     var searchKey = TargetKey.Remove(0, 5); //<hex>
                     if (string.IsNullOrEmpty(searchKey)) return replaceContentBytes;
                     var searchKeyBytes = MyBytes.HexStringToByte(searchKey, HexDecimal.hex16);
                     return MyBytes.ReplaceBytes(sourceContent, searchKeyBytes, replaceContentBytes);
                 default:
-                    throw new Exception("not support ContentModificMode");
+                    throw new Exception("not support ContentModifiedMode");
             }
         }
 
         public byte[] GetRecodeContent(string sourceContent)
         {
-            switch (ModificMode)
+            switch (ModifiedMode)
             {
-                case ContentModificMode.NoChange:
-                case ContentModificMode.EntireReplace:
-                case ContentModificMode.KeyVauleReplace:
-                case ContentModificMode.RegexReplace:
-                case ContentModificMode.HexReplace:
+                case ContentModifiedMode.NoChange:
+                case ContentModifiedMode.EntireReplace:
+                case ContentModifiedMode.KeyValueReplace:
+                case ContentModifiedMode.RegexReplace:
+                case ContentModifiedMode.HexReplace:
                     throw new Exception("this implement of GetRecodeContent is only for ReCode ");
-                case ContentModificMode.ReCode:
+                case ContentModifiedMode.ReCode:
                     var searchKey = TargetKey.Remove(0, 8).Trim(' ');
                     var nowEncoding =
                         Encoding.GetEncoding(searchKey); //shoud check the searchKey when we creat ContentModific
                     return nowEncoding.GetBytes(sourceContent);
                 default:
-                    throw new Exception("not support ContentModificMode");
+                    throw new Exception("not support ContentModifiedMode");
             }
         }
 
         public override string ToString()
         {
             var resultStringBuilder = new StringBuilder();
-            switch (ModificMode)
+            switch (ModifiedMode)
             {
-                case ContentModificMode.NoChange:
+                case ContentModifiedMode.NoChange:
                     break;
-                case ContentModificMode.EntireReplace:
+                case ContentModifiedMode.EntireReplace:
                     resultStringBuilder.Append("[EntireReplace] ");
                     resultStringBuilder.Append(ReplaceContent);
                     break;
-                case ContentModificMode.KeyVauleReplace:
+                case ContentModifiedMode.KeyValueReplace:
                     resultStringBuilder.Append("[Replace] ");
                     resultStringBuilder.Append(TargetKey);
                     resultStringBuilder.Append(" [To] ");
                     resultStringBuilder.Append(ReplaceContent);
                     break;
-                case ContentModificMode.RegexReplace:
+                case ContentModifiedMode.RegexReplace:
                     resultStringBuilder.Append("[RegexReplace] ");
                     resultStringBuilder.Append(TargetKey);
                     resultStringBuilder.Append(" [To] ");
                     resultStringBuilder.Append(ReplaceContent);
                     break;
-                case ContentModificMode.HexReplace:
+                case ContentModifiedMode.HexReplace:
                     resultStringBuilder.Append("[HexReplace] ");
                     resultStringBuilder.Append(TargetKey);
                     resultStringBuilder.Append(" [To] ");
                     resultStringBuilder.Append(ReplaceContent);
                     break;
-                case ContentModificMode.ReCode:
+                case ContentModifiedMode.ReCode:
                     resultStringBuilder.Append("[ReCode] ");
                     resultStringBuilder.Append(TargetKey);
                     break;
                 default:
-                    resultStringBuilder.Append("not support ContentModificMode");
+                    resultStringBuilder.Append("not support ContentModifiedMode");
                     break;
             }
 

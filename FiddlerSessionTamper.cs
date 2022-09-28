@@ -1,46 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Fiddler;
+﻿using Fiddler;
 using FreeHttp.AutoTest;
 using FreeHttp.AutoTest.ParameterizationPick;
 using FreeHttp.FiddlerHelper;
 using FreeHttp.FreeHttpControl;
 using FreeHttp.HttpHelper;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace FreeHttp
 {
     public class FiddlerSessionTamper
     {
         /// <summary>
-        ///     Modific the http request in oSession with your rule
+        ///     Modified the http request in oSession with your rule
         /// </summary>
         /// <param name="oSession">oSession</param>
-        /// <param name="nowFiddlerRequsetChange">FiddlerRequsetChange</param>
-        public static void ModificSessionRequest(Session oSession, FiddlerRequestChange nowFiddlerRequsetChange,
-            Action<string> ShowError, Action<string> ShowMes)
+        /// <param name="nowFiddlerRequestChange">FiddlerRequsetChange</param>
+        /// <param name="showError"></param>
+        /// <param name="showMes"></param>
+        public static void ModifiedSessionRequest(Session oSession, FiddlerRequestChange nowFiddlerRequestChange,
+            Action<string> showError, Action<string> showMes)
         {
-            if (nowFiddlerRequsetChange.ParameterPickList != null)
-                PickSessionParameter(oSession, nowFiddlerRequsetChange, ShowError, ShowMes, true);
-            if (nowFiddlerRequsetChange.IsRawReplace)
+            if (nowFiddlerRequestChange.ParameterPickList != null)
+                PickSessionParameter(oSession, nowFiddlerRequestChange, showError, showMes, true);
+            if (nowFiddlerRequestChange.IsRawReplace)
             {
-                ReplaceSessionRequest(oSession, nowFiddlerRequsetChange, ShowError, ShowMes);
+                ReplaceSessionRequest(oSession, nowFiddlerRequestChange, showError, showMes);
             }
             else
             {
                 string errMes;
                 var nameValueCollection = new NameValueCollection();
-                //Modific uri
-                if (nowFiddlerRequsetChange.UriModific != null &&
-                    nowFiddlerRequsetChange.UriModific.ModificMode != ContentModificMode.NoChange)
+                //Modified uri
+                if (nowFiddlerRequestChange.UriModific != null &&
+                    nowFiddlerRequestChange.UriModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
                     try
                     {
                         oSession.fullUrl =
-                            nowFiddlerRequsetChange.UriModific.GetFinalContent(oSession.fullUrl, nameValueCollection,
+                            nowFiddlerRequestChange.UriModific.GetFinalContent(oSession.fullUrl, nameValueCollection,
                                 out errMes);
                     }
                     catch (Exception ex)
@@ -49,91 +51,83 @@ namespace FreeHttp
                     }
 
                     if (errMes != null)
-                        ShowError(string.Format("error in GetFinalContent in UriModific that [{0}]", errMes));
+                        showError($"error in GetFinalContent in UriModified that [{errMes}]");
                 }
 
-                //Modific body
-                if (nowFiddlerRequsetChange.BodyModific != null &&
-                    nowFiddlerRequsetChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                //Modified body
+                if (nowFiddlerRequestChange.BodyModific != null &&
+                    nowFiddlerRequestChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
-                    if (nowFiddlerRequsetChange.BodyModific.ModificMode == ContentModificMode.HexReplace)
+                    if (nowFiddlerRequestChange.BodyModific.ModifiedMode == ContentModifiedMode.HexReplace)
                     {
                         try
                         {
                             oSession.RequestBody =
-                                nowFiddlerRequsetChange.BodyModific.GetFinalContent(oSession.requestBodyBytes);
+                                nowFiddlerRequestChange.BodyModific.GetFinalContent(oSession.requestBodyBytes);
                         }
                         catch (Exception ex)
                         {
-                            ShowError(string.Format("error in GetFinalContent in HexReplace with [{0}]", ex.Message));
+                            showError($"error in GetFinalContent in HexReplace with [{ex.Message}]");
                         }
                     }
                     else
                     {
                         string sourceRequestBody = null;
-                        try //GetRequestBodyAsString may throw exception
+                        try
                         {
-                            //oSession.utilDecodeRequest();
                             sourceRequestBody = oSession.GetRequestBodyAsString();
                         }
                         catch (Exception ex)
                         {
-                            ShowError(string.Format("error in GetRequestBodyAsString [{0}]", ex.Message));
+                            showError($"error in GetRequestBodyAsString [{ex.Message}]");
                             oSession.utilDecodeRequest();
                             sourceRequestBody = oSession.GetRequestBodyEncoding().GetString(oSession.requestBodyBytes);
                         }
                         finally
                         {
-                            if (nowFiddlerRequsetChange.BodyModific.ModificMode == ContentModificMode.ReCode)
+                            if (nowFiddlerRequestChange.BodyModific.ModifiedMode == ContentModifiedMode.ReCode)
                             {
                                 try
                                 {
                                     oSession.RequestBody =
-                                        nowFiddlerRequsetChange.BodyModific.GetRecodeContent(sourceRequestBody);
+                                        nowFiddlerRequestChange.BodyModific.GetRecodeContent(sourceRequestBody);
                                 }
                                 catch (Exception ex)
                                 {
-                                    ShowError(string.Format("error in GetRecodeContent in ReCode with [{0}]",
-                                        ex.Message));
+                                    showError($"error in GetRecodeContent in ReCode with [{ex.Message}]");
                                 }
                             }
                             else
                             {
-                                //oSession.requestBodyBytes = oSession.GetRequestBodyEncoding().GetBytes(nowFiddlerRequsetChange.BodyModific.GetFinalContent(sourceRequestBody)); // requestBodyBytes直接修改内部成员
-                                //oSession.ResponseBody = oSession.GetRequestBodyEncoding().GetBytes(nowFiddlerRequsetChange.BodyModific.GetFinalContent(sourceRequestBody)); //ResponseBody修改内部成员 更新Content-Length ，同时删除编码头，适用于hex数据
-                                //Session.RequestBody : Gets or Sets the HTTP Request body bytes. Setter adjusts Content-Length header, and removes Transfer-Encoding and Content-Encoding headers. Setter DOES NOT CLONE the passed array. Setter will throw if the Request object does not exist for some reason. Use utilSetRequestBody(sStr) to ensure proper character encoding if you need to use a string. 
-                                //oSession.utilSetRequestBody(nowFiddlerRequsetChange.BodyModific.GetFinalContent(sourceRequestBody));  //utilSetRequestBody 虽然会自动更新Content-Length 但是会强制使用utf8 ，适用于字符串
-                                var tempRequestBody =
-                                    nowFiddlerRequsetChange.BodyModific.GetFinalContent(sourceRequestBody,
-                                        nameValueCollection, out errMes);
+                                var tempRequestBody = nowFiddlerRequestChange.BodyModific.GetFinalContent(sourceRequestBody,
+                                                                        nameValueCollection, out errMes);
                                 if (errMes != null)
-                                    ShowError(string.Format("error in GetFinalContent in BodyModific that [{0}]",
-                                        errMes));
+                                    showError($"error in GetFinalContent in BodyModified that [{errMes}]");
                                 if (tempRequestBody != sourceRequestBody) oSession.utilSetRequestBody(tempRequestBody);
                             }
                         }
                     }
                 }
 
-                //Modific heads
-                if (nowFiddlerRequsetChange.HeadDelList != null && nowFiddlerRequsetChange.HeadDelList.Count > 0)
-                    foreach (var tempDelHead in nowFiddlerRequsetChange.HeadDelList)
+                //Modified heads
+                if (nowFiddlerRequestChange.HeadDelList != null && nowFiddlerRequestChange.HeadDelList.Count > 0)
+                    foreach (var tempDelHead in nowFiddlerRequestChange.HeadDelList)
                         oSession.RequestHeaders.Remove(tempDelHead);
-                if (nowFiddlerRequsetChange.HeadAddList != null && nowFiddlerRequsetChange.HeadAddList.Count > 0)
-                    foreach (var tempAddHead in nowFiddlerRequsetChange.HeadAddList)
+                if (nowFiddlerRequestChange.HeadAddList != null && nowFiddlerRequestChange.HeadAddList.Count > 0)
+                    foreach (var tempAddHead in nowFiddlerRequestChange.HeadAddList)
                         if (tempAddHead.Contains(": "))
-                            oSession.RequestHeaders.Add(tempAddHead.Remove(tempAddHead.IndexOf(": ")),
-                                tempAddHead.Substring(tempAddHead.IndexOf(": ") + 2));
+                            oSession.RequestHeaders.Add(tempAddHead.Remove(tempAddHead.IndexOf(": ", StringComparison.Ordinal)),
+                                tempAddHead.Substring(tempAddHead.IndexOf(": ", StringComparison.Ordinal) + 2));
                         else
-                            ShowError(string.Format("error to deal add head string with [{0}]", tempAddHead));
-                //other action              
+                            showError($"error to deal add head string with [{tempAddHead}]");
+                //other action
                 if (nameValueCollection != null && nameValueCollection.Count > 0)
-                    ShowMes(string.Format("[ParameterizationContent]:{0}", nameValueCollection.MyToFormatString()));
+                    showMes($"[ParametrizationContent]:{nameValueCollection.MyToFormatString()}");
             }
         }
 
         /// <summary>
-        ///     Replace the http request in oSession with your rule (it may call by ModificSessionRequest)
+        ///     Replace the http request in oSession with your rule (it may call by ModifiedSessionRequest)
         /// </summary>
         /// <param name="oSession">oSession</param>
         /// <param name="nowFiddlerRequsetChange">FiddlerRequsetChange</param>
@@ -193,17 +187,19 @@ namespace FreeHttp
         /// </summary>
         /// <param name="oSession">oSession</param>
         /// <param name="nowFiddlerResponseChange">FiddlerResponseChange</param>
-        public static void ModificSessionResponse(Session oSession, FiddlerResponseChange nowFiddlerResponseChange,
-            Action<string> ShowError, Action<string> ShowMes)
+        /// <param name="showError"></param>
+        /// <param name="showMes"></param>
+        public static void ModifiedSessionResponse(Session oSession, FiddlerResponseChange nowFiddlerResponseChange,
+            Action<string> showError, Action<string> showMes)
         {
             if (nowFiddlerResponseChange.ParameterPickList != null &&
                 nowFiddlerResponseChange.ParameterPickList.Count > 0)
-                PickSessionParameter(oSession, nowFiddlerResponseChange, ShowError, ShowMes, false);
+                PickSessionParameter(oSession, nowFiddlerResponseChange, showError, showMes, false);
             if (nowFiddlerResponseChange.IsRawReplace)
             {
                 //if IsIsDirectRespons do nothing
                 if (!nowFiddlerResponseChange.IsIsDirectRespons)
-                    ReplaceSessionResponse(oSession, nowFiddlerResponseChange, ShowError, ShowMes);
+                    ReplaceSessionResponse(oSession, nowFiddlerResponseChange, showError, showMes);
             }
             else
             {
@@ -211,9 +207,9 @@ namespace FreeHttp
                 var nameValueCollection = new NameValueCollection();
                 //modific body
                 if (nowFiddlerResponseChange.BodyModific != null &&
-                    nowFiddlerResponseChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                    nowFiddlerResponseChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
-                    if (nowFiddlerResponseChange.BodyModific.ModificMode == ContentModificMode.HexReplace)
+                    if (nowFiddlerResponseChange.BodyModific.ModifiedMode == ContentModifiedMode.HexReplace)
                     {
                         try
                         {
@@ -222,7 +218,7 @@ namespace FreeHttp
                         }
                         catch (Exception ex)
                         {
-                            ShowError(string.Format("error in GetFinalContent in HexReplace with [{0}]", ex.Message));
+                            showError($"error in GetFinalContent in HexReplace with [{ex.Message}]");
                         }
                     }
                     else
@@ -233,19 +229,19 @@ namespace FreeHttp
                         {
                             sourceResponseBody =
                                 oSession
-                                    .GetResponseBodyAsString(); //if the head encode is change ,GetResponseBodyAsString maybe fail 
+                                    .GetResponseBodyAsString(); //if the head encode is change ,GetResponseBodyAsString maybe fail
                             if (nowFiddlerResponseChange.BodyModific.ParameterTargetKey.ToString().Contains('\n'))
                                 sourceResponseBody = sourceResponseBody.Replace("\r\n", "\n");
                         }
                         catch (Exception ex)
                         {
-                            ShowError(string.Format("error in GetResponseBodyAsString [{0}]", ex.Message));
+                            showError(string.Format("error in GetResponseBodyAsString [{0}]", ex.Message));
                             oSession.utilDecodeResponse();
                             sourceResponseBody = oSession.GetResponseBodyEncoding().GetString(oSession.ResponseBody);
                         }
                         finally
                         {
-                            if (nowFiddlerResponseChange.BodyModific.ModificMode == ContentModificMode.ReCode)
+                            if (nowFiddlerResponseChange.BodyModific.ModifiedMode == ContentModifiedMode.ReCode)
                             {
                                 try
                                 {
@@ -254,7 +250,7 @@ namespace FreeHttp
                                 }
                                 catch (Exception ex)
                                 {
-                                    ShowError(string.Format("error in GetRecodeContent in ReCode with [{0}]",
+                                    showError(string.Format("error in GetRecodeContent in ReCode with [{0}]",
                                         ex.Message));
                                 }
                             }
@@ -265,7 +261,7 @@ namespace FreeHttp
                                     nowFiddlerResponseChange.BodyModific.GetFinalContent(sourceResponseBody,
                                         nameValueCollection, out errMes);
                                 if (errMes != null)
-                                    ShowError(string.Format("error in GetFinalContent in BodyModific that [{0}]",
+                                    showError(string.Format("error in GetFinalContent in BodyModific that [{0}]",
                                         errMes));
                                 if (tempResponseBody != sourceResponseBody)
                                     oSession.utilSetResponseBody(tempResponseBody);
@@ -289,10 +285,10 @@ namespace FreeHttp
                             oSession.ResponseHeaders.Add(tempAddHead.Remove(tempAddHead.IndexOf(": ")),
                                 tempAddHead.Substring(tempAddHead.IndexOf(": ") + 2));
                         else
-                            ShowError(string.Format("error to deal add head string with [{0}]", tempAddHead));
+                            showError(string.Format("error to deal add head string with [{0}]", tempAddHead));
                 //other action
                 if (nameValueCollection != null && nameValueCollection.Count > 0)
-                    ShowMes(string.Format("[ParameterizationContent]:{0}", nameValueCollection.MyToFormatString()));
+                    showMes(string.Format("[ParameterizationContent]:{0}", nameValueCollection.MyToFormatString()));
             }
         }
 
@@ -326,13 +322,6 @@ namespace FreeHttp
                 ShowMes(string.Format("[ParameterizationContent]:{0}", nameValueCollection.MyToFormatString()));
             using (var ms = new MemoryStream(tempResponseBytes))
             {
-                if (isClosePipeWhenReplace)
-                {
-                    oSession
-                        .PoisonClientPipe(); //关闭客户端与代理的连接(Ensures that, after the response is complete, the client socket is closed and not reused. Does NOT (and must not) close the pipe. )
-                    oSession.PoisonServerPipe(); //关闭代理与服务器的连接
-                }
-
                 if (!oSession.LoadResponseFromStream(ms, null))
                 {
                     ShowError("error to oSession.LoadResponseFromStream");
@@ -351,45 +340,43 @@ namespace FreeHttp
             }
         }
 
-
         /// <summary>
         ///     Modific the websocket message with your rule
         /// </summary>
         /// <param name="oSession"></param>
         /// <param name="webSocketMessage"></param>
-        /// <param name="nowFiddlerRequsetChange"></param>
         /// <param name="ShowError"></param>
         /// <param name="ShowMes"></param>
-        public static void ModificWebSocketMessage(Session oSession, WebSocketMessage webSocketMessage,
+        public static void ModifiedWebSocketMessage(Session oSession, WebSocketMessage webSocketMessage,
             IFiddlerHttpTamper nowFiddlerChange, bool isRequest, Action<string> ShowError, Action<string> ShowMes)
         {
             if (nowFiddlerChange.ParameterPickList != null)
                 PickSessionParameter(oSession, nowFiddlerChange, ShowError, ShowMes, webSocketMessage.IsOutbound,
                     webSocketMessage);
-            ParameterContentModific payLoadModific = null;
+            ParameterContentModific payLoadModified;
             if (isRequest)
             {
-                var nowFiddlerRequsetChange = (FiddlerRequestChange)nowFiddlerChange;
-                payLoadModific = nowFiddlerRequsetChange.BodyModific;
+                var fiddlerRequestChange = (FiddlerRequestChange)nowFiddlerChange;
+                payLoadModified = fiddlerRequestChange.BodyModific;
             }
             else
             {
                 var nowFiddlerResponseChange = (FiddlerResponseChange)nowFiddlerChange;
-                payLoadModific = nowFiddlerResponseChange.BodyModific;
+                payLoadModified = nowFiddlerResponseChange.BodyModific;
             }
 
             //Modific body
-            if (payLoadModific != null && payLoadModific.ModificMode != ContentModificMode.NoChange)
+            if (payLoadModified != null && payLoadModified.ModifiedMode != ContentModifiedMode.NoChange)
             {
-                if (payLoadModific.ModificMode == ContentModificMode.HexReplace)
+                if (payLoadModified.ModifiedMode == ContentModifiedMode.HexReplace)
                 {
                     try
                     {
-                        webSocketMessage.SetPayload(payLoadModific.GetFinalContent(webSocketMessage.PayloadAsBytes()));
+                        webSocketMessage.SetPayload(payLoadModified.GetFinalContent(webSocketMessage.PayloadAsBytes()));
                     }
                     catch (Exception ex)
                     {
-                        ShowError(string.Format("error in GetFinalContent in HexReplace with [{0}]", ex.Message));
+                        ShowError($"error in GetFinalContent in HexReplace with [{ex.Message}]");
                     }
                 }
                 else
@@ -407,40 +394,36 @@ namespace FreeHttp
                     else
                     {
                         var sourcePayload = webSocketMessage.PayloadAsString();
-                        if (payLoadModific.ModificMode == ContentModificMode.ReCode)
+                        if (payLoadModified.ModifiedMode == ContentModifiedMode.ReCode)
                         {
                             try
                             {
-                                webSocketMessage.SetPayload(payLoadModific.GetRecodeContent(sourcePayload));
+                                webSocketMessage.SetPayload(payLoadModified.GetRecodeContent(sourcePayload));
                             }
                             catch (Exception ex)
                             {
-                                ShowError(string.Format("error in GetRecodeContent in ReCode with [{0}]", ex.Message));
+                                ShowError($"error in GetRecodeContent in ReCode with [{ex.Message}]");
                             }
                         }
                         else
                         {
                             string errMes;
                             var nameValueCollection = new NameValueCollection();
-
-                            //webSocketMessage.SetPayload(payLoadModific.GetFinalContent(sourcePayload));
+                            
                             var tempPayload =
-                                payLoadModific.GetFinalContent(sourcePayload, nameValueCollection, out errMes);
+                                payLoadModified.GetFinalContent(sourcePayload, nameValueCollection, out errMes);
                             if (errMes != null)
-                                ShowError(
-                                    string.Format("error in GetFinalContent in PayLoadModific that [{0}]", errMes));
+                                ShowError($"error in GetFinalContent in PayLoadModified that [{errMes}]");
                             if (tempPayload != sourcePayload) //非标准协议的实现，或没有实现的压缩会导致PayloadAsString()使数据不可逆
                                 webSocketMessage.SetPayload(tempPayload);
 
-                            if (nameValueCollection != null && nameValueCollection.Count > 0)
-                                ShowMes(string.Format("[ParameterizationContent]:{0}",
-                                    nameValueCollection.MyToFormatString()));
+                            if (nameValueCollection.Count > 0) ShowMes(
+                                $"[ParametrizationContent]:{nameValueCollection.MyToFormatString()}");
                         }
                     }
                 }
             }
         }
-
 
         public static void PickSessionParameter(Session oSession, IFiddlerHttpTamper nowFiddlerHttpTamper,
             Action<string> ShowError, Action<string> ShowMes, bool isRequest, WebSocketMessage webSocketMessage = null)
@@ -493,6 +476,7 @@ namespace FreeHttp
 
                             pickResult = PickFunc(pickSource, parameterPick);
                             break;
+
                         case ParameterPickRange.Heads:
                             if (isWebSocket)
                             {
@@ -511,6 +495,7 @@ namespace FreeHttp
                             }
 
                             break;
+
                         case ParameterPickRange.Entity:
                             if (isWebSocket)
                             {
@@ -540,6 +525,7 @@ namespace FreeHttp
                             }
 
                             break;
+
                         default:
                             ShowError("[ParameterizationPick] unkonw pick range");
                             break;

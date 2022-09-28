@@ -78,10 +78,10 @@ namespace FreeHttp.FiddlerHelper
             }
             else
             {
-                if (UriModific != null && UriModific.ModificMode != ContentModificMode.NoChange)
+                if (UriModific != null && UriModific.ModifiedMode != ContentModifiedMode.NoChange)
                     UriModific.SetUseParameterInfo(IsHasParameter,
                         ActuatorStaticDataController.actuatorStaticDataCollection);
-                if (BodyModific != null && BodyModific.ModificMode != ContentModificMode.NoChange)
+                if (BodyModific != null && BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                     BodyModific.SetUseParameterInfo(IsHasParameter,
                         ActuatorStaticDataController.actuatorStaticDataCollection);
             }

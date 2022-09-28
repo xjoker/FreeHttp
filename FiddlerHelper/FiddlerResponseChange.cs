@@ -80,7 +80,7 @@ namespace FreeHttp.FiddlerHelper
             }
             else
             {
-                if (BodyModific != null && BodyModific.ModificMode != ContentModificMode.NoChange)
+                if (BodyModific != null && BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                     BodyModific.SetUseParameterInfo(IsHasParameter,
                         ActuatorStaticDataController.actuatorStaticDataCollection);
             }

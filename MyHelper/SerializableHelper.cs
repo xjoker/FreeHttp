@@ -12,17 +12,17 @@ namespace FreeHttp.MyHelper
 {
     internal class SerializableHelper
     {
-        public static void SerializeRuleList(ListView requestRuleListView, ListView reponseRuleListView)
+        public static void SerializeRuleList(ListView requestRuleListView, ListView responseRuleListView)
         {
             var rulePath = "FreeHttp\\RuleData.xml";
-            if (requestRuleListView != null && reponseRuleListView != null)
+            if (requestRuleListView != null && responseRuleListView != null)
             {
                 //dynamic
                 var requestList = new List<FiddlerRequestChange>();
                 var responseList = new List<FiddlerResponseChange>();
                 foreach (ListViewItem tempItem in requestRuleListView.Items)
                     requestList.Add((FiddlerRequestChange)tempItem.Tag);
-                foreach (ListViewItem tempItem in reponseRuleListView.Items)
+                foreach (ListViewItem tempItem in responseRuleListView.Items)
                     responseList.Add((FiddlerResponseChange)tempItem.Tag);
                 //Stream stream = File.Open("data.xml", FileMode.Create);
                 TextWriter writer = new StreamWriter(rulePath, false);

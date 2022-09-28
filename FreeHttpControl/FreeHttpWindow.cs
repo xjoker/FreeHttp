@@ -314,7 +314,7 @@ namespace FreeHttp.FreeHttpControl
             tbe_ResponseBodyModific.OnCloseEditBox += tbe_BodyModific_OnCloseEditBox;
             tbe_urlFilter.OnCloseEditBox += tbe_BodyModific_OnCloseEditBox;
 
-            cb_macthMode.SelectedIndex = 0;
+            cb_matchMode.SelectedIndex = 0;
             tabControl_Modific.SelectedTab = tabPage_requestModific;
             IsSetResponseLatencyEable = false;
 
@@ -757,7 +757,7 @@ namespace FreeHttp.FreeHttpControl
             //tabPage_requestReplace
             tb_requestReplace_uri.Width = tabControl_Modific.Width - 289;
 
-            //tabPage_reponseModific
+            //tabPage_responseModific
             responseRemoveHeads.Width = (tabControl_Modific.Width - 22) / 3;
             responseAddHeads.Width = (tabControl_Modific.Width - 22) * 2 / 3;
 
@@ -1856,9 +1856,9 @@ namespace FreeHttp.FreeHttpControl
             if (OnUpdataFromSession != null) OnUpdataFromSession(this, null);
         }
 
-        private void cb_macthMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void cb_matchMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cb_macthMode.Text == "AllPass")
+            if (cb_matchMode.Text == "AllPass")
             {
                 tb_urlFilter.Text = "";
                 tb_urlFilter.Enabled = false;

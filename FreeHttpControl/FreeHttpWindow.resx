@@ -1847,7 +1847,7 @@ Response Replace : creat a response replace rule , it will replace all the http 
         lIFbCABl4BYCQBm4hQBQBm4hAJTA5av+B6/LIc3hWyi7AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="cb_macthMode.ToolTip" xml:space="preserve">
+  <data name="cb_matchMode.ToolTip" xml:space="preserve">
     <value>Methods that match HTTP
 Contain     : when the url contain the target value it will match success
 StartWith   :when the url start with the target value it will match success

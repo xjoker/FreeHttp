@@ -194,9 +194,9 @@ namespace FreeHttp
                         var tempListViewItem = myFreeHttpWindow.FindListViewItemFromRule(matchItem);
                         FreeHttpWindow.MarkMatchRule(tempListViewItem);
                         MarkSession(oSession);
-                        ShowMes($"macth the [requst rule {tempListViewItem.SubItems[0].Text}] with {oSession.fullUrl}");
-                        FiddlerSessionTamper.ModificSessionRequest(oSession, nowFiddlerRequestChange, ShowError,
-                            ShowMes);
+                        ShowMessage($"match the [requst rule {tempListViewItem.SubItems[0].Text}] with {oSession.fullUrl}");
+                        FiddlerSessionTamper.ModifiedSessionRequest(oSession, nowFiddlerRequestChange, ShowError,
+                            ShowMessage);
                         if (IsOnlyMatchFistTamperRule) break;
                     }
             }
@@ -219,10 +219,10 @@ namespace FreeHttp
                         {
                             FreeHttpWindow.MarkMatchRule(tempListViewItem);
                             MarkSession(oSession);
-                            ShowMes(
-                                $"macth the [reponse rule {tempListViewItem.SubItems[0].Text}] with {oSession.fullUrl}");
+                            ShowMessage(
+                                $"match the [response rule {tempListViewItem.SubItems[0].Text}] with {oSession.fullUrl}");
                             FiddlerSessionTamper.ReplaceSessionResponse(oSession, nowFiddlerResponseChange, ShowError,
-                                ShowMes);
+                                ShowMessage);
                             //oSession.state = SessionStates.Done;
                             if (IsOnlyMatchFistTamperRule) break;
                         }
@@ -250,16 +250,14 @@ namespace FreeHttp
                         {
                             FreeHttpWindow.MarkMatchRule(tempListViewItem);
                             MarkSession(oSession);
-                            ShowMes(string.Format("macth the [reponse rule {0}] with {1}",
-                                tempListViewItem.SubItems[0].Text, oSession.fullUrl));
-                            FiddlerSessionTamper.ModificSessionResponse(oSession, nowFiddlerResponseChange, ShowError,
-                                ShowMes);
+                            ShowMessage($"match the [response rule {tempListViewItem.SubItems[0].Text}] with {oSession.fullUrl}");
+                            FiddlerSessionTamper.ModifiedSessionResponse(oSession, nowFiddlerResponseChange, ShowError,
+                                ShowMessage);
                         }
 
                         if (nowFiddlerResponseChange.ResponseLatency > 0)
                         {
-                            ShowMes(string.Format("[reponse rule {0}] is modified , now delay {1} ms",
-                                tempListViewItem.SubItems[0].Text, nowFiddlerResponseChange.ResponseLatency));
+                            ShowMessage( $"[response rule {tempListViewItem.SubItems[0].Text}] is modified , now delay {nowFiddlerResponseChange.ResponseLatency} ms");
                             Thread.Sleep(nowFiddlerResponseChange.ResponseLatency);
                         }
 
@@ -285,12 +283,12 @@ namespace FreeHttp
             myFreeHttpWindow.Dispose();
         }
 
-        private void ShowMes(string mes)
+        private void ShowMessage(string mes)
         {
-            ShowMes(mes, false);
+            ShowMessage(mes, false);
         }
 
-        private void ShowMes(string mes, bool isReport = false)
+        private void ShowMessage(string mes, bool isReport = false)
         {
             if (!isOnLoad) return;
             if (isReport) _ = RemoteLogService.ReportLogAsync(mes, RemoteLogService.RemoteLogOperation.SessionTamp);
@@ -395,7 +393,7 @@ namespace FreeHttp
                             e.UpgradeInfo.isForceEnter ? MessageBoxButtons.OK : MessageBoxButtons.OKCancel,
                             MessageBoxIcon.Information) == DialogResult.OK)
                     {
-                        ShowMes(string.Format("enter message details [flag:{0}]", e.UpgradeInfo.messageFlag ?? "any"),
+                        ShowMessage(string.Format("enter message details [flag:{0}]", e.UpgradeInfo.messageFlag ?? "any"),
                             true);
                         if (string.IsNullOrEmpty(e.UpgradeInfo.url))
                         {
@@ -415,7 +413,7 @@ namespace FreeHttp
                     }
                     else
                     {
-                        ShowMes(
+                        ShowMessage(
                             string.Format("cancel enter message details [flag:{0}]",
                                 e.UpgradeInfo.messageFlag ?? "any"), true);
                     }
@@ -489,7 +487,7 @@ namespace FreeHttp
             {
                 case FreeHttpWindow.GetSessionAction.ShowShowResponse:
                     var tempStr = FiddlerSessionTamper.GetSessionRawData(tempSession, true);
-                    ShowMes(tempStr == null ? "error session" : string.Format("Get Raw Data\r\n{0}", tempStr));
+                    ShowMessage(tempStr == null ? "error session" : string.Format("Get Raw Data\r\n{0}", tempStr));
                     myFreeHttpWindow.ShowOwnerWindow(tempSession.fullUrl, tempStr);
                     break;
                 case FreeHttpWindow.GetSessionAction.SetCookies:
@@ -617,7 +615,7 @@ namespace FreeHttp
             var tempSession = FiddlerObject.UI.GetFirstSelectedSession();
             if (tempSession != null)
             {
-                ShowMes(string.Format("Get http session in {0}", tempSession.fullUrl));
+                ShowMessage(string.Format("Get http session in {0}", tempSession.fullUrl));
                 ((FreeHttpWindow)sender).SetModificSession(tempSession);
             }
             else
@@ -676,16 +674,16 @@ namespace FreeHttp
                         var tempListViewItem = myFreeHttpWindow.FindListViewItemFromRule(matchItem);
                         FreeHttpWindow.MarkMatchRule(tempListViewItem);
                         MarkSession(oSession);
-                        ShowMes(string.Format("macth the [requst rule {0}] with {1}", tempListViewItem.SubItems[0].Text,
+                        ShowMessage(string.Format("match the [requst rule {0}] with {1}", tempListViewItem.SubItems[0].Text,
                             oSession.fullUrl));
-                        FiddlerSessionTamper.ModificWebSocketMessage(oSession, webSocketMessage, matchItem, isRequest,
-                            ShowError, ShowMes);
+                        FiddlerSessionTamper.ModifiedWebSocketMessage(oSession, webSocketMessage, matchItem, isRequest,
+                            ShowError, ShowMessage);
                         if (!isRequest)
                         {
                             var nowFiddlerResponseChange = (FiddlerResponseChange)matchItem;
                             if (nowFiddlerResponseChange.ResponseLatency > 0)
                             {
-                                ShowMes(string.Format("[reponse rule {0}] is modified , now delay {1} ms",
+                                ShowMessage(string.Format("[response rule {0}] is modified , now delay {1} ms",
                                     tempListViewItem.SubItems[0].Text, nowFiddlerResponseChange.ResponseLatency));
                                 Thread.Sleep(nowFiddlerResponseChange.ResponseLatency);
                             }

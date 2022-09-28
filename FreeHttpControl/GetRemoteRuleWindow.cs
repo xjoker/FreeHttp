@@ -82,9 +82,9 @@ namespace FreeHttp.FreeHttpControl
                 }
 
             if (lv_remote_responseRuleList.CheckedItems != null && lv_remote_responseRuleList.CheckedItems.Count > 0)
-                foreach (ListViewItem reponseItem in lv_remote_responseRuleList.CheckedItems)
+                foreach (ListViewItem responseItem in lv_remote_responseRuleList.CheckedItems)
                 {
-                    if (!(reponseItem.Tag is FiddlerResponseChange))
+                    if (!(responseItem.Tag is FiddlerResponseChange))
                     {
                         MessageBox.Show("data error");
                         _ = RemoteLogService.ReportLogAsync("requestItem.Tag is not FiddlerRequestChange",
@@ -92,7 +92,7 @@ namespace FreeHttp.FreeHttpControl
                         return;
                     }
 
-                    nowFiddlerResponseChangeRuleList.Add(reponseItem.Tag as FiddlerResponseChange);
+                    nowFiddlerResponseChangeRuleList.Add(responseItem.Tag as FiddlerResponseChange);
                 }
 
             if (nowFiddlerRequestChangeRuleList.Count == 0 && nowFiddlerResponseChangeRuleList.Count == 0)

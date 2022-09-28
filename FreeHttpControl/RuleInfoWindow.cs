@@ -135,7 +135,7 @@ namespace FreeHttp.FreeHttpControl
                         else
                         {
                             if (nowFiddlerRequestChange.UriModific != null &&
-                                nowFiddlerRequestChange.UriModific.ModificMode != ContentModificMode.NoChange)
+                                nowFiddlerRequestChange.UriModific.ModifiedMode != ContentModifiedMode.NoChange)
                             {
                                 rtb_ruleInfo.AddRtbStr("Request Uri Modific: ", Color.Blue, false);
                                 rtb_ruleInfo.AppendText(nowFiddlerRequestChange.UriModific.ToString());
@@ -160,7 +160,7 @@ namespace FreeHttp.FreeHttpControl
                                 }
 
                             if (nowFiddlerRequestChange.BodyModific != null &&
-                                nowFiddlerRequestChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                                nowFiddlerRequestChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                             {
                                 rtb_ruleInfo.AddRtbStr("Request Entity Modific: ", Color.Blue, false);
                                 rtb_ruleInfo.AppendText(nowFiddlerRequestChange.BodyModific.ToString());
@@ -203,7 +203,7 @@ namespace FreeHttp.FreeHttpControl
                                 }
 
                             if (nowFiddlerResponseChange.BodyModific != null &&
-                                nowFiddlerResponseChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                                nowFiddlerResponseChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                             {
                                 rtb_ruleInfo.AddRtbStr("Response Entity Modific: ", Color.Blue, false);
                                 rtb_ruleInfo.AppendText(nowFiddlerResponseChange.BodyModific.ToString());
@@ -223,7 +223,7 @@ namespace FreeHttp.FreeHttpControl
 
                         var nowFiddlerWebSocketRequestChange = ruleInfo as FiddlerRequestChange;
                         if (nowFiddlerWebSocketRequestChange.BodyModific != null &&
-                            nowFiddlerWebSocketRequestChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                            nowFiddlerWebSocketRequestChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                         {
                             rtb_ruleInfo.AddRtbStr("Socket Payload Modific: ", Color.Blue, false);
                             rtb_ruleInfo.AppendText(nowFiddlerWebSocketRequestChange.BodyModific.ToString());
@@ -239,7 +239,7 @@ namespace FreeHttp.FreeHttpControl
 
                         var nowFiddlerWebSocketResponseChange = ruleInfo as FiddlerResponseChange;
                         if (nowFiddlerWebSocketResponseChange.BodyModific != null &&
-                            nowFiddlerWebSocketResponseChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                            nowFiddlerWebSocketResponseChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                         {
                             rtb_ruleInfo.AddRtbStr("Socket Payload Modific: ", Color.Blue, false);
                             rtb_ruleInfo.AppendText(nowFiddlerWebSocketResponseChange.BodyModific.ToString());

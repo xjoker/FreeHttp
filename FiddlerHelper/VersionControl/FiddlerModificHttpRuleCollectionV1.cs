@@ -57,14 +57,14 @@ namespace FreeHttp.FiddlerHelper.VersionControlV1
                 fiddlerModificHttpRuleCollection.RequestRuleList.Count > 0)
                 foreach (var item in fiddlerModificHttpRuleCollection.RequestRuleList)
                 {
-                    if (item.UriModific != null && item.UriModific.ModificMode != ContentModificMode.NoChange)
+                    if (item.UriModific != null && item.UriModific.ModifiedMode != ContentModifiedMode.NoChange)
                     {
                         item.UriModific.ParameterReplaceContent =
                             new CaseParameterizationContent(item.UriModific.ReplaceContent);
                         item.UriModific.ParameterTargetKey = new CaseParameterizationContent(item.UriModific.TargetKey);
                     }
 
-                    if (item.BodyModific != null && item.BodyModific.ModificMode != ContentModificMode.NoChange)
+                    if (item.BodyModific != null && item.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                     {
                         item.BodyModific.ParameterReplaceContent =
                             new CaseParameterizationContent(item.BodyModific.ReplaceContent);
@@ -81,7 +81,7 @@ namespace FreeHttp.FiddlerHelper.VersionControlV1
                 fiddlerModificHttpRuleCollection.ResponseRuleList.Count > 0)
                 foreach (var item in fiddlerModificHttpRuleCollection.ResponseRuleList)
                 {
-                    if (item.BodyModific != null && item.BodyModific.ModificMode != ContentModificMode.NoChange)
+                    if (item.BodyModific != null && item.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                     {
                         item.BodyModific.ParameterReplaceContent =
                             new CaseParameterizationContent(item.BodyModific.ReplaceContent);

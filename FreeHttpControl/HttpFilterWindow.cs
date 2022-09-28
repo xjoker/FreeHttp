@@ -37,14 +37,14 @@ namespace FreeHttp.FreeHttpControl
 
             if (httpFilter.UriMatch != null)
             {
-                cb_macthUriMode.Text = httpFilter.UriMatch.MatchMode.ToString();
+                cb_matchUriMode.Text = httpFilter.UriMatch.MatchMode.ToString();
                 tb_urlFilter.Text = string.IsNullOrEmpty(httpFilter.UriMatch.MatchUri)
                     ? ""
                     : httpFilter.UriMatch.MatchUri;
             }
             else
             {
-                cb_macthUriMode.SelectedIndex = 0;
+                cb_matchUriMode.SelectedIndex = 0;
             }
 
             if (httpFilter.HeadMatch != null)
@@ -54,14 +54,14 @@ namespace FreeHttp.FreeHttpControl
 
             if (httpFilter.BodyMatch != null)
             {
-                cb_macthMode.Text = httpFilter.BodyMatch.MatchMode.ToString();
+                cb_matchMode.Text = httpFilter.BodyMatch.MatchMode.ToString();
                 rtb_bodyFilter.Text = string.IsNullOrEmpty(httpFilter.BodyMatch.MatchUri)
                     ? ""
                     : httpFilter.BodyMatch.MatchUri;
             }
             else
             {
-                cb_macthMode.SelectedIndex = 4;
+                cb_matchMode.SelectedIndex = 4;
             }
 
             if (!string.IsNullOrEmpty(httpFilter.Name)) tb_RuleAlias.Text = httpFilter.Name;
@@ -77,7 +77,7 @@ namespace FreeHttp.FreeHttpControl
         private void bt_ok_Click(object sender, EventArgs e)
         {
             var matchUriMode = FiddlerUriMatchMode.AllPass;
-            if (!Enum.TryParse(cb_macthUriMode.Text, out matchUriMode))
+            if (!Enum.TryParse(cb_matchUriMode.Text, out matchUriMode))
                 throw new Exception("get error FiddlerUriMatchMode");
             if (httpFilter.UriMatch != null)
             {
@@ -116,7 +116,7 @@ namespace FreeHttp.FreeHttpControl
             }
 
             var matchMode = FiddlerUriMatchMode.AllPass;
-            if (!Enum.TryParse(cb_macthMode.Text, out matchMode)) throw new Exception("get error FiddlerBodyMatchMode");
+            if (!Enum.TryParse(cb_matchMode.Text, out matchMode)) throw new Exception("get error FiddlerBodyMatchMode");
             if (matchMode == FiddlerUriMatchMode.AllPass ||
                 (rtb_bodyFilter.Text == "" && matchMode != FiddlerUriMatchMode.Is))
                 httpFilter.BodyMatch = null;
@@ -137,9 +137,9 @@ namespace FreeHttp.FreeHttpControl
             Close();
         }
 
-        private void cb_macthMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void cb_matchMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cb_macthMode.SelectedIndex == 4)
+            if (cb_matchMode.SelectedIndex == 4)
             {
                 rtb_bodyFilter.Clear();
                 rtb_bodyFilter.Enabled = false;

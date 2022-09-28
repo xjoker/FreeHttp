@@ -30,10 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HttpFilterWindow));
             this.bt_ok = new System.Windows.Forms.Button();
-            this.cb_macthMode = new System.Windows.Forms.ComboBox();
+            this.cb_matchMode = new System.Windows.Forms.ComboBox();
             this.rtb_bodyFilter = new System.Windows.Forms.RichTextBox();
             this.lb_info_1 = new System.Windows.Forms.Label();
-            this.cb_macthUriMode = new System.Windows.Forms.ComboBox();
+            this.cb_matchUriMode = new System.Windows.Forms.ComboBox();
             this.tb_urlFilter = new System.Windows.Forms.TextBox();
             this.lb_info_2 = new System.Windows.Forms.Label();
             this.tbe_urlFilter = new FreeHttp.FreeHttpControl.TextBoxEditer();
@@ -53,21 +53,21 @@
             this.bt_ok.UseVisualStyleBackColor = true;
             this.bt_ok.Click += new System.EventHandler(this.bt_ok_Click);
             // 
-            // cb_macthMode
+            // cb_matchMode
             // 
-            this.cb_macthMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_macthMode.FormattingEnabled = true;
-            this.cb_macthMode.Items.AddRange(new object[] {
+            this.cb_matchMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_matchMode.FormattingEnabled = true;
+            this.cb_matchMode.Items.AddRange(new object[] {
             "Contain",
             "StartWith",
             "Is",
             "Regex",
             "AllPass"});
-            this.cb_macthMode.Location = new System.Drawing.Point(5, 241);
-            this.cb_macthMode.Name = "cb_macthMode";
-            this.cb_macthMode.Size = new System.Drawing.Size(95, 20);
-            this.cb_macthMode.TabIndex = 10;
-            this.cb_macthMode.SelectedIndexChanged += new System.EventHandler(this.cb_macthMode_SelectedIndexChanged);
+            this.cb_matchMode.Location = new System.Drawing.Point(5, 241);
+            this.cb_matchMode.Name = "cb_matchMode";
+            this.cb_matchMode.Size = new System.Drawing.Size(95, 20);
+            this.cb_matchMode.TabIndex = 10;
+            this.cb_matchMode.SelectedIndexChanged += new System.EventHandler(this.cb_matchMode_SelectedIndexChanged);
             // 
             // rtb_bodyFilter
             // 
@@ -86,21 +86,21 @@
             this.lb_info_1.TabIndex = 12;
             this.lb_info_1.Text = "HTTP Body Filter";
             // 
-            // cb_macthUriMode
+            // cb_matchUriMode
             // 
-            this.cb_macthUriMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_macthUriMode.FormattingEnabled = true;
-            this.cb_macthUriMode.Items.AddRange(new object[] {
+            this.cb_matchUriMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_matchUriMode.FormattingEnabled = true;
+            this.cb_matchUriMode.Items.AddRange(new object[] {
             "Contain",
             "StartWith",
             "EndWith",
             "Is",
             "Regex",
             "AllPass"});
-            this.cb_macthUriMode.Location = new System.Drawing.Point(84, 6);
-            this.cb_macthUriMode.Name = "cb_macthUriMode";
-            this.cb_macthUriMode.Size = new System.Drawing.Size(89, 20);
-            this.cb_macthUriMode.TabIndex = 14;
+            this.cb_matchUriMode.Location = new System.Drawing.Point(84, 6);
+            this.cb_matchUriMode.Name = "cb_matchUriMode";
+            this.cb_matchUriMode.Size = new System.Drawing.Size(89, 20);
+            this.cb_matchUriMode.TabIndex = 14;
             // 
             // tb_urlFilter
             // 
@@ -169,11 +169,11 @@
             this.Controls.Add(this.lb_info_3);
             this.Controls.Add(this.tbe_urlFilter);
             this.Controls.Add(this.lb_info_2);
-            this.Controls.Add(this.cb_macthUriMode);
+            this.Controls.Add(this.cb_matchUriMode);
             this.Controls.Add(this.tb_urlFilter);
             this.Controls.Add(this.lb_info_1);
             this.Controls.Add(this.rtb_bodyFilter);
-            this.Controls.Add(this.cb_macthMode);
+            this.Controls.Add(this.cb_matchMode);
             this.Controls.Add(this.bt_ok);
             this.Controls.Add(this.FilterHeads);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -193,10 +193,10 @@
 
         private EditListView FilterHeads;
         private System.Windows.Forms.Button bt_ok;
-        private System.Windows.Forms.ComboBox cb_macthMode;
+        private System.Windows.Forms.ComboBox cb_matchMode;
         private System.Windows.Forms.RichTextBox rtb_bodyFilter;
         private System.Windows.Forms.Label lb_info_1;
-        private System.Windows.Forms.ComboBox cb_macthUriMode;
+        private System.Windows.Forms.ComboBox cb_matchUriMode;
         private System.Windows.Forms.TextBox tb_urlFilter;
         private System.Windows.Forms.Label lb_info_2;
         private TextBoxEditer tbe_urlFilter;

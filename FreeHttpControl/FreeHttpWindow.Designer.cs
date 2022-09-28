@@ -76,7 +76,7 @@ namespace FreeHttp.FreeHttpControl
             this.cb_editRequestEdition = new System.Windows.Forms.ComboBox();
             this.tabPage_responseModific = new System.Windows.Forms.TabPage();
             this.splitContainer_responseModific = new System.Windows.Forms.SplitContainer();
-            this.groupBox_reponseHeadModific = new System.Windows.Forms.GroupBox();
+            this.groupBox_responseHeadModific = new System.Windows.Forms.GroupBox();
             this.responseAddHeads = new FreeHttp.FreeHttpControl.EditListView();
             this.responseRemoveHeads = new FreeHttp.FreeHttpControl.EditListView();
             this.groupBox_responseBodyModific = new System.Windows.Forms.GroupBox();
@@ -124,7 +124,7 @@ namespace FreeHttp.FreeHttpControl
             this.lb_editRuleMode = new System.Windows.Forms.Label();
             this.pictureBox_editRuleMode = new System.Windows.Forms.PictureBox();
             this.pb_getSession = new System.Windows.Forms.PictureBox();
-            this.cb_macthMode = new System.Windows.Forms.ComboBox();
+            this.cb_matchMode = new System.Windows.Forms.ComboBox();
             this.splitContainer_httpControl = new System.Windows.Forms.SplitContainer();
             this.pb_remoteRule = new System.Windows.Forms.PictureBox();
             this.pb_addRequestRule = new System.Windows.Forms.PictureBox();
@@ -192,7 +192,7 @@ namespace FreeHttp.FreeHttpControl
             this.splitContainer_responseModific.Panel1.SuspendLayout();
             this.splitContainer_responseModific.Panel2.SuspendLayout();
             this.splitContainer_responseModific.SuspendLayout();
-            this.groupBox_reponseHeadModific.SuspendLayout();
+            this.groupBox_responseHeadModific.SuspendLayout();
             this.groupBox_responseBodyModific.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -752,7 +752,7 @@ namespace FreeHttp.FreeHttpControl
             // 
             // splitContainer_responseModific.Panel1
             // 
-            this.splitContainer_responseModific.Panel1.Controls.Add(this.groupBox_reponseHeadModific);
+            this.splitContainer_responseModific.Panel1.Controls.Add(this.groupBox_responseHeadModific);
             // 
             // splitContainer_responseModific.Panel2
             // 
@@ -761,19 +761,19 @@ namespace FreeHttp.FreeHttpControl
             this.splitContainer_responseModific.SplitterDistance = 114;
             this.splitContainer_responseModific.TabIndex = 2;
             // 
-            // groupBox_reponseHeadModific
+            // groupBox_responseHeadModific
             // 
-            this.groupBox_reponseHeadModific.Controls.Add(this.responseAddHeads);
-            this.groupBox_reponseHeadModific.Controls.Add(this.responseRemoveHeads);
-            this.groupBox_reponseHeadModific.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox_reponseHeadModific.Location = new System.Drawing.Point(0, 0);
-            this.groupBox_reponseHeadModific.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.groupBox_reponseHeadModific.Name = "groupBox_reponseHeadModific";
-            this.groupBox_reponseHeadModific.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.groupBox_reponseHeadModific.Size = new System.Drawing.Size(593, 114);
-            this.groupBox_reponseHeadModific.TabIndex = 1;
-            this.groupBox_reponseHeadModific.TabStop = false;
-            this.groupBox_reponseHeadModific.Text = "Heads Modific";
+            this.groupBox_responseHeadModific.Controls.Add(this.responseAddHeads);
+            this.groupBox_responseHeadModific.Controls.Add(this.responseRemoveHeads);
+            this.groupBox_responseHeadModific.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox_responseHeadModific.Location = new System.Drawing.Point(0, 0);
+            this.groupBox_responseHeadModific.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox_responseHeadModific.Name = "groupBox_responseHeadModific";
+            this.groupBox_responseHeadModific.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox_responseHeadModific.Size = new System.Drawing.Size(593, 114);
+            this.groupBox_responseHeadModific.TabIndex = 1;
+            this.groupBox_responseHeadModific.TabStop = false;
+            this.groupBox_responseHeadModific.Text = "Heads Modific";
             // 
             // responseAddHeads
             // 
@@ -1249,7 +1249,7 @@ namespace FreeHttp.FreeHttpControl
             this.groupBox_urlFilter.Controls.Add(this.lb_editRuleMode);
             this.groupBox_urlFilter.Controls.Add(this.pictureBox_editRuleMode);
             this.groupBox_urlFilter.Controls.Add(this.pb_getSession);
-            this.groupBox_urlFilter.Controls.Add(this.cb_macthMode);
+            this.groupBox_urlFilter.Controls.Add(this.cb_matchMode);
             this.groupBox_urlFilter.Controls.Add(this.tb_urlFilter);
             this.groupBox_urlFilter.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox_urlFilter.Location = new System.Drawing.Point(0, 0);
@@ -1351,11 +1351,11 @@ namespace FreeHttp.FreeHttpControl
             this.pb_getSession.MouseLeave += new System.EventHandler(this.pictureBox_MouseLeave);
             this.pb_getSession.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
             // 
-            // cb_macthMode
+            // cb_matchMode
             // 
-            this.cb_macthMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_macthMode.FormattingEnabled = true;
-            this.cb_macthMode.Items.AddRange(new object[] {
+            this.cb_matchMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_matchMode.FormattingEnabled = true;
+            this.cb_matchMode.Items.AddRange(new object[] {
             "Contain",
             "StartWith",
             "EndWith",
@@ -1363,13 +1363,13 @@ namespace FreeHttp.FreeHttpControl
             "Regex",
             "UAContain",
             "AllPass"});
-            this.cb_macthMode.Location = new System.Drawing.Point(30, 18);
-            this.cb_macthMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.cb_macthMode.Name = "cb_macthMode";
-            this.cb_macthMode.Size = new System.Drawing.Size(72, 20);
-            this.cb_macthMode.TabIndex = 2;
-            this.toolTip_forMainWindow.SetToolTip(this.cb_macthMode, resources.GetString("cb_macthMode.ToolTip"));
-            this.cb_macthMode.SelectedIndexChanged += new System.EventHandler(this.cb_macthMode_SelectedIndexChanged);
+            this.cb_matchMode.Location = new System.Drawing.Point(30, 18);
+            this.cb_matchMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.cb_matchMode.Name = "cb_matchMode";
+            this.cb_matchMode.Size = new System.Drawing.Size(72, 20);
+            this.cb_matchMode.TabIndex = 2;
+            this.toolTip_forMainWindow.SetToolTip(this.cb_matchMode, resources.GetString("cb_matchMode.ToolTip"));
+            this.cb_matchMode.SelectedIndexChanged += new System.EventHandler(this.cb_matchMode_SelectedIndexChanged);
             // 
             // splitContainer_httpControl
             // 
@@ -1794,7 +1794,7 @@ namespace FreeHttp.FreeHttpControl
             this.splitContainer_responseModific.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_responseModific)).EndInit();
             this.splitContainer_responseModific.ResumeLayout(false);
-            this.groupBox_reponseHeadModific.ResumeLayout(false);
+            this.groupBox_responseHeadModific.ResumeLayout(false);
             this.groupBox_responseBodyModific.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
@@ -1848,7 +1848,7 @@ namespace FreeHttp.FreeHttpControl
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader_responseRule;
         private System.Windows.Forms.GroupBox groupBox_urlFilter;
-        private System.Windows.Forms.ComboBox cb_macthMode;
+        private System.Windows.Forms.ComboBox cb_matchMode;
         private System.Windows.Forms.TextBox tb_urlFilter;
         private System.Windows.Forms.GroupBox groupBox_bodyModific;
         private System.Windows.Forms.GroupBox groupBox_headsModific;
@@ -1877,7 +1877,7 @@ namespace FreeHttp.FreeHttpControl
         private System.Windows.Forms.PictureBox pb_requestReplace_changeMode;
         private System.Windows.Forms.RichTextBox rtb_requestRaw;
         private System.Windows.Forms.SplitContainer splitContainer_responseModific;
-        private System.Windows.Forms.GroupBox groupBox_reponseHeadModific;
+        private System.Windows.Forms.GroupBox groupBox_responseHeadModific;
         private EditListView responseAddHeads;
         private System.Windows.Forms.GroupBox groupBox_responseBodyModific;
         private MyPanel panel3;

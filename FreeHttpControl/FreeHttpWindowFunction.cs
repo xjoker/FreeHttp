@@ -275,7 +275,7 @@ namespace FreeHttp.FreeHttpControl
 
                         groupBox_uriModific.Enabled = true;
                         groupBox_headsModific.Enabled = true;
-                        groupBox_reponseHeadModific.Enabled = true;
+                        groupBox_responseHeadModific.Enabled = true;
                         quickRuleToolStripMenuItem.Enabled = true;
                         pb_protocolSwitch.SwitchState = true;
                         tabControl_Modific.Controls.Clear();
@@ -298,7 +298,7 @@ namespace FreeHttp.FreeHttpControl
                         tabPage_responseModific.Controls.Add(groupBox_responseBodyModific);
                         groupBox_uriModific.Enabled = false;
                         groupBox_headsModific.Enabled = false;
-                        groupBox_reponseHeadModific.Enabled = false;
+                        groupBox_responseHeadModific.Enabled = false;
                         quickRuleToolStripMenuItem.Enabled = false;
                         pb_protocolSwitch.SwitchState = false;
                         //if (tabControl_Modific.SelectedTab == tabPage_requestReplace || tabControl_Modific.SelectedTab == tabPage_responseReplace) tabControl_Modific.SelectedTab = tabPage_requestModific;//tabControl_Modific.SelectedIndex = 0;
@@ -392,7 +392,7 @@ namespace FreeHttp.FreeHttpControl
 
         private FiddlerUriMatch GetUriMatch()
         {
-            if (!Enum.TryParse(cb_macthMode.Text, out FiddlerUriMatchMode matchMode)) throw new Exception("get error FiddlerUriMatchMode");
+            if (!Enum.TryParse(cb_matchMode.Text, out FiddlerUriMatchMode matchMode)) throw new Exception("get error FiddlerUriMatchMode");
             if (matchMode != FiddlerUriMatchMode.AllPass && tb_urlFilter.Text == "") return null;
             return new FiddlerUriMatch(matchMode, tb_urlFilter.Text);
         }
@@ -423,7 +423,7 @@ namespace FreeHttp.FreeHttpControl
         {
             if (fiddlerUriMatch != null)
             {
-                cb_macthMode.Text = fiddlerUriMatch.MatchMode.ToString();
+                cb_matchMode.Text = fiddlerUriMatch.MatchMode.ToString();
                 tb_urlFilter.Text = string.IsNullOrEmpty(fiddlerUriMatch.MatchUri) ? "" : fiddlerUriMatch.MatchUri;
             }
         }
@@ -651,7 +651,7 @@ namespace FreeHttp.FreeHttpControl
 
         private void ClearModificInfo()
         {
-            cb_macthMode.Text = "";
+            cb_matchMode.Text = "";
             tb_urlFilter.Text = "";
             tb_requestModific_uriModificKey.Text = "";
             tb_requestModific_uriModificValue.Text = "";
@@ -688,7 +688,7 @@ namespace FreeHttp.FreeHttpControl
             {
                 tabControl_Modific.SelectedTab = tabPage_requestModific;
                 if (fiddlerRequsetChange.UriModific != null &&
-                    fiddlerRequsetChange.UriModific.ModificMode != ContentModificMode.NoChange)
+                    fiddlerRequsetChange.UriModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
                     tb_requestModific_uriModificKey.Text =
                         fiddlerRequsetChange.UriModific.ParameterTargetKey.ToString();
@@ -703,7 +703,7 @@ namespace FreeHttp.FreeHttpControl
                     foreach (var tempHead in fiddlerRequsetChange.HeadAddList)
                         requestAddHeads.ListDataView.Items.Add(tempHead);
                 if (fiddlerRequsetChange.BodyModific != null &&
-                    fiddlerRequsetChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                    fiddlerRequsetChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
                     tb_requestModific_body.Text = fiddlerRequsetChange.BodyModific.ParameterTargetKey.ToString();
                     if (!string.IsNullOrEmpty(fiddlerRequsetChange.BodyModific.ParameterReplaceContent.ToString()))
@@ -789,7 +789,7 @@ namespace FreeHttp.FreeHttpControl
                     foreach (var tempHead in fiddlerResponseChange.HeadAddList)
                         responseAddHeads.ListDataView.Items.Add(tempHead);
                 if (fiddlerResponseChange.BodyModific != null &&
-                    fiddlerResponseChange.BodyModific.ModificMode != ContentModificMode.NoChange)
+                    fiddlerResponseChange.BodyModific.ModifiedMode != ContentModifiedMode.NoChange)
                 {
                     tb_responseModific_body.Text = fiddlerResponseChange.BodyModific.ParameterTargetKey.ToString();
                     if (!string.IsNullOrEmpty(fiddlerResponseChange.BodyModific.ParameterReplaceContent.ToString()))
@@ -1023,7 +1023,7 @@ namespace FreeHttp.FreeHttpControl
                     ? TamperProtocalType.WebSocket
                     : TamperProtocalType.Http, null, null);
             tb_urlFilter.Text = session.fullUrl;
-            cb_macthMode.SelectedIndex = 2;
+            cb_matchMode.SelectedIndex = 2;
             pictureBox_editHttpFilter.Tag = GetHttpFilter();
             if (NowProtocalMode == TamperProtocalType.Http)
             {
@@ -1073,11 +1073,11 @@ namespace FreeHttp.FreeHttpControl
 
             //Response Replace
 
-            var tempReponseStream = new MemoryStream();
-            if (session.WriteResponseToStream(tempReponseStream, false))
+            var tempresponseStream = new MemoryStream();
+            if (session.WriteResponseToStream(tempresponseStream, false))
             {
-                var tempResponseBytes = new byte[tempReponseStream.Length];
-                tempResponseBytes = tempReponseStream.ToArray();
+                var tempResponseBytes = new byte[tempresponseStream.Length];
+                tempResponseBytes = tempresponseStream.ToArray();
                 rawResponseEdit.SetText(Encoding.UTF8.GetString(tempResponseBytes));
             }
             else
@@ -1085,7 +1085,7 @@ namespace FreeHttp.FreeHttpControl
                 rawResponseEdit.SetText("read ResponseStream fail");
             }
 
-            tempReponseStream.Close();
+            tempresponseStream.Close();
         }
 
         private void SetClientCookies(string yourCookieString, Func<KeyValuePair<string, string>, bool> operateCookies)
