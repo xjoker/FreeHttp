@@ -1,29 +1,20 @@
 ﻿//#define NET4_5UP
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Fiddler.WebFormats;
+using FreeHttp.MyHelper;
 
 namespace FreeHttp.WebService
 {
     public class FeedbackService
     {
-        [System.Runtime.Serialization.DataContract()]
+        [DataContract]
         public class Feedback
         {
-            [System.Runtime.Serialization.DataMember()]
-            public string user_token { get; set; }
-            [System.Runtime.Serialization.DataMember()]
-            public string user_mac { get; set; }
-            [System.Runtime.Serialization.DataMember()]
-            public string machine_name { get; set; }
-            [System.Runtime.Serialization.DataMember()]
-            public string contact_infomation { get; set; }
-            [System.Runtime.Serialization.DataMember()]
-            public string feedback_content { get; set; }
-
-            public Feedback(string token ,string mac, String machine, string contact, string content)
+            public Feedback(string token, string mac, string machine, string contact, string content)
             {
                 user_token = token;
                 user_mac = mac;
@@ -31,29 +22,46 @@ namespace FreeHttp.WebService
                 contact_infomation = contact;
                 feedback_content = content;
             }
+
+            [DataMember] public string user_token { get; set; }
+
+            [DataMember] public string user_mac { get; set; }
+
+            [DataMember] public string machine_name { get; set; }
+
+            [DataMember] public string contact_infomation { get; set; }
+
+            [DataMember] public string feedback_content { get; set; }
         }
 
 #if NET4_5UP
-        public static async Task<int> SubmitFeedbackAsync(string userToken ,string mac, String machine, string contact, string content)
+        public static async Task<int> SubmitFeedbackAsync(string userToken, string mac, string machine, string contact,
+            string content)
         {
-            return await SubmitFeedbackAsync(new Feedback(userToken ,mac, machine, contact, content));
+            return await SubmitFeedbackAsync(new Feedback(userToken, mac, machine, contact, content));
         }
 
         public static async Task<int> SubmitFeedbackAsync(Feedback feedback)
         {
             if (feedback == null) return -1;
-            Func<int> SubmitFeedbackTask = new Func<int>(() =>
+            Func<int> SubmitFeedbackTask = () =>
             {
                 //使用 Fiddler.WebFormats.JSON.JsonEncode 不要引入 第三方 库， 或者需要使用DataContract注解
-                string feedbackBody = String.Format("{{ \"user_mac\":{0},\"machine_name\":{1},\"feedback_content\":{2},\"contact_infomation\": {3}}}"
-                    , Fiddler.WebFormats.JSON.JsonEncode(feedback.user_mac),
-                    Fiddler.WebFormats.JSON.JsonEncode(feedback.machine_name),
-                    Fiddler.WebFormats.JSON.JsonEncode(feedback.feedback_content),
-                    Fiddler.WebFormats.JSON.JsonEncode(feedback.contact_infomation));
-                int responseCode = (new WebService.MyWebTool.MyHttp()).SendHttpRequest(string.Format("{0}freehttp/Feedback", ConfigurationData.BaseUrl), MyHelper.MyJsonHelper.JsonDataContractJsonSerializer.ObjectToJsonStr(feedback), "POST", new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Content-Type", "application/json") }, false, null, null).StatusCode;
+                var feedbackBody = string.Format(
+                    "{{ \"user_mac\":{0},\"machine_name\":{1},\"feedback_content\":{2},\"contact_infomation\": {3}}}"
+                    , JSON.JsonEncode(feedback.user_mac),
+                    JSON.JsonEncode(feedback.machine_name),
+                    JSON.JsonEncode(feedback.feedback_content),
+                    JSON.JsonEncode(feedback.contact_infomation));
+                var responseCode = new MyWebTool.MyHttp().SendHttpRequest(
+                        string.Format("{0}freehttp/Feedback", ConfigurationData.BaseUrl),
+                        MyJsonHelper.JsonDataContractJsonSerializer.ObjectToJsonStr(feedback), "POST",
+                        new List<KeyValuePair<string, string>>
+                            { new KeyValuePair<string, string>("Content-Type", "application/json") }, false, null, null)
+                    .StatusCode;
                 return responseCode;
-            });
-            int code =  await Task.Run(SubmitFeedbackTask);
+            };
+            var code = await Task.Run(SubmitFeedbackTask);
             return code;
         }
 #endif
@@ -65,17 +73,18 @@ namespace FreeHttp.WebService
             Task<int> submitFeedback = new Task<int>(() =>
             {
                 Feedback feedback = new Feedback(mac, contact, content);
-                string feedbackBody = String.Format("{{ \"user_mac\":{0},\"feedback_content\":{1},\"contact_infomation\": {2}}}"
+                string feedbackBody =
+ String.Format("{{ \"user_mac\":{0},\"feedback_content\":{1},\"contact_infomation\": {2}}}"
                     , Fiddler.WebFormats.JSON.JsonEncode(feedback.user_mac),
                     Fiddler.WebFormats.JSON.JsonEncode(feedback.feedback_content),
                     Fiddler.WebFormats.JSON.JsonEncode(feedback.contact_infomation));
-                int responseCode = (new WebService.MyWebTool.MyHttp()).SendHttpRequest(string.Format("{0}freehttp/Feedback", ConfigurationData.BaseUrl), feedbackBody, "POST",  new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Content-Type", "application/json") }, false, null, null).StatusCode;
+                int responseCode =
+ (new WebService.MyWebTool.MyHttp()).SendHttpRequest(string.Format("{0}freehttp/Feedback", ConfigurationData.BaseUrl), feedbackBody, "POST",  new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Content-Type", "application/json") }, false, null, null).StatusCode;
                 return responseCode;
             });
             submitFeedback.Start();
             submitFeedback.ContinueWith((task) => { showResult(task.Result); }) ;
         }
 #endif
-
     }
 }

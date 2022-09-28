@@ -1,25 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FreeHttp.WebService
+﻿namespace FreeHttp.WebService
 {
     public class ConfigurationData
     {
-        private static readonly String url_dev = "http://localhost:5000/";
-        private static readonly String url_pro = "https://api.lulianqi.com/";
-        private static readonly String rule_version = "2.0";
+        private static readonly string url_dev = "http://localhost:5000/";
 
-        public static string BaseUrl
-        {
-            get { return url_pro; }
-        }
+        public static string BaseUrl { get; } = "https://api.lulianqi.com/";
 
-        public static string RuleVersion
-        {
-            get { return rule_version; }
-        }
+        public static string RuleVersion { get; } = "2.0";
     }
 }

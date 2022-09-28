@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace FreeHttp.WebService.DataModel
 {
@@ -18,26 +13,21 @@ namespace FreeHttp.WebService.DataModel
     [DataContract]
     public class BaseResultModel<T>
     {
-        public BaseResultModel(int? code = 0, string message = null, T result = default, ReturnStatus returnStatus = ReturnStatus.Success)
+        public BaseResultModel(int? code = 0, string message = null, T result = default,
+            ReturnStatus returnStatus = ReturnStatus.Success)
         {
-            this.Code = code ?? 0;
-            this.Message = message;
-            this.Status = returnStatus;
-            this.Result = result;
-
+            Code = code ?? 0;
+            Message = message;
+            Status = returnStatus;
+            Result = result;
         }
 
-        [DataMember]
-        public int Code { get; set; }
+        [DataMember] public int Code { get; set; }
 
-        [DataMember]
-        public string Message { get; set; }
+        [DataMember] public string Message { get; set; }
 
-        [DataMember]
-        public T Result { get; set; }
+        [DataMember] public T Result { get; set; }
 
-        [DataMember]
-        public ReturnStatus Status { get; set; }
-
+        [DataMember] public ReturnStatus Status { get; set; }
     }
 }

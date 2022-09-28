@@ -1,124 +1,111 @@
-﻿using FreeHttp.AutoTest.ParameterizationPick;
-using FreeHttp.FreeHttpControl.MyControl;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using FreeHttp.AutoTest.ParameterizationPick;
+using FreeHttp.FreeHttpControl.MyControl;
 
 namespace FreeHttp.FreeHttpControl
 {
     public partial class EditParameterPickWindow : Form
     {
+        private readonly int parameterPickBoxHeight = 26;
+        private readonly Point startLocation = new Point(8, 28);
+        private readonly int startWindowHeight = 87;
+        private readonly List<AddParameterPickBox> addParameterPickBoxList = new List<AddParameterPickBox>();
+
+        private readonly Action<List<ParameterPick>> SetParameterPickAction;
+
         public EditParameterPickWindow()
         {
             InitializeComponent();
         }
 
-        private Action<List<ParameterPick>> SetParameterPickAction;
-        private readonly Point startLocation = new Point(8, 28);
-        private readonly int parameterPickBoxHeight = 26;
-        private readonly int startWindowHeight = 87;
-        private List<AddParameterPickBox> addParameterPickBoxList = new List<AddParameterPickBox>();
-
-        public EditParameterPickWindow(List<ParameterPick> parameterPicklist, Action<List<ParameterPick>> setParameterPickAction)
+        public EditParameterPickWindow(List<ParameterPick> parameterPicklist,
+            Action<List<ParameterPick>> setParameterPickAction)
         {
             InitializeComponent();
-            if(parameterPicklist!=null && parameterPicklist.Count>0)
-            {
-                foreach(var parameterPick in parameterPicklist)
-                {
+            if (parameterPicklist != null && parameterPicklist.Count > 0)
+                foreach (var parameterPick in parameterPicklist)
                     AddParameterPickBox(parameterPick);
-                }
-            }
             else
-            {
                 AddParameterPickBox(null);
-            }
             SetParameterPickAction = setParameterPickAction;
         }
 
         private void EditParameterPickWindow_Load(object sender, EventArgs e)
         {
-
         }
 
         private void AddParameterPickBox(ParameterPick yourParameterPick)
         {
             AddParameterPickBox tempAddParameterPickBox;
-            if(yourParameterPick==null)
+            if (yourParameterPick == null)
             {
-                tempAddParameterPickBox = new AddParameterPickBox(); 
+                tempAddParameterPickBox = new AddParameterPickBox();
             }
             else
             {
                 tempAddParameterPickBox = new AddParameterPickBox(yourParameterPick);
                 tempAddParameterPickBox.Tag = yourParameterPick;
             }
+
             tempAddParameterPickBox.OnAddParameterClick += AddParameterPickBox_OnAddParameterClick;
             AddAddParameterPickBox(tempAddParameterPickBox);
         }
 
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void AddAddParameterPickBox(AddParameterPickBox yourAddParameterPickBox)
         {
-            if(addParameterPickBoxList.Contains(yourAddParameterPickBox))
-            {
-                return;
-            }
-            int nowParameterPickBoxCount = addParameterPickBoxList.Count;
-            yourAddParameterPickBox.Location = new Point(startLocation.X, startLocation.Y + nowParameterPickBoxCount * parameterPickBoxHeight);
-            this.Controls.Add(yourAddParameterPickBox);
+            if (addParameterPickBoxList.Contains(yourAddParameterPickBox)) return;
+            var nowParameterPickBoxCount = addParameterPickBoxList.Count;
+            yourAddParameterPickBox.Location = new Point(startLocation.X,
+                startLocation.Y + nowParameterPickBoxCount * parameterPickBoxHeight);
+            Controls.Add(yourAddParameterPickBox);
             yourAddParameterPickBox.GetFocus();
-            this.Height += parameterPickBoxHeight;
+            Height += parameterPickBoxHeight;
             addParameterPickBoxList.Add(yourAddParameterPickBox);
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void ResizeParameterPickBoxList()
         {
-            if(addParameterPickBoxList!=null)
+            if (addParameterPickBoxList != null)
             {
-                for(int i=0;i<addParameterPickBoxList.Count;i++)
-                {
-                    addParameterPickBoxList[i].Location = new Point(startLocation.X, startLocation.Y + parameterPickBoxHeight * i);
-                }
-                this.Height = startWindowHeight + parameterPickBoxHeight * addParameterPickBoxList.Count;
+                for (var i = 0; i < addParameterPickBoxList.Count; i++)
+                    addParameterPickBoxList[i].Location =
+                        new Point(startLocation.X, startLocation.Y + parameterPickBoxHeight * i);
+                Height = startWindowHeight + parameterPickBoxHeight * addParameterPickBoxList.Count;
             }
         }
 
-        void AddParameterPickBox_OnAddParameterClick(object sender, AddParameterPickBox.AddParameterEventArgs e)
+        private void AddParameterPickBox_OnAddParameterClick(object sender, AddParameterPickBox.AddParameterEventArgs e)
         {
-            if(e.IsAdd)
+            if (e.IsAdd)
             {
                 try
                 {
-                    ParameterPick tempParameterPick = addParameterPickBoxList[addParameterPickBoxList.Count - 1].GetParameterPickInfo();
+                    var tempParameterPick = addParameterPickBoxList[addParameterPickBoxList.Count - 1]
+                        .GetParameterPickInfo();
                     addParameterPickBoxList[addParameterPickBoxList.Count - 1].Tag = tempParameterPick;
                     AddParameterPickBox(null);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(string.Format("this parameter add infomation is illegal :{0}", ex.Message));
-                    return;
                 }
             }
             else
             {
-                if(addParameterPickBoxList.Contains(sender) || this.Controls.Contains((Control)sender))
+                if (addParameterPickBoxList.Contains(sender) || Controls.Contains((Control)sender))
                 {
-                    this.Controls.Remove((Control)sender);
+                    Controls.Remove((Control)sender);
                     addParameterPickBoxList.Remove((AddParameterPickBox)sender);
                     ResizeParameterPickBoxList();
-                    if(addParameterPickBoxList.Count==0)
-                    {
-                        pb_add.Visible = true ;
-                    }
+                    if (addParameterPickBoxList.Count == 0) pb_add.Visible = true;
                 }
                 else
                 {
@@ -135,18 +122,14 @@ namespace FreeHttp.FreeHttpControl
 
         private void bt_ok_Click(object sender, EventArgs e)
         {
-            List<ParameterPick> setParameterPickList = new List<ParameterPick>();
+            var setParameterPickList = new List<ParameterPick>();
             foreach (var tempItem in addParameterPickBoxList)
-            {
-                if(tempItem.Tag!=null&& tempItem.Tag is ParameterPick)
-                {
+                if (tempItem.Tag != null && tempItem.Tag is ParameterPick)
                     setParameterPickList.Add((ParameterPick)tempItem.Tag);
-                }
                 else
-                {
                     try
                     {
-                        ParameterPick tempParameterPick = tempItem.GetParameterPickInfo();
+                        var tempParameterPick = tempItem.GetParameterPickInfo();
                         tempItem.Tag = tempParameterPick;
                         setParameterPickList.Add(tempParameterPick);
                     }
@@ -155,16 +138,9 @@ namespace FreeHttp.FreeHttpControl
                         MessageBox.Show(string.Format("this parameter add infomation is illegal :{0}", ex.Message));
                         return;
                     }
-                }
-            }
-            if(SetParameterPickAction!=null)
-            {
-                SetParameterPickAction(setParameterPickList);
-            }
-            this.Close();
+
+            if (SetParameterPickAction != null) SetParameterPickAction(setParameterPickList);
+            Close();
         }
-
-
-
     }
 }

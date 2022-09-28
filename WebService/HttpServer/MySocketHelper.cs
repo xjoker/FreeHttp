@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.NetworkInformation;
 
 namespace FreeHttp.WebService.HttpServer
 {
@@ -12,19 +6,13 @@ namespace FreeHttp.WebService.HttpServer
     {
         public static bool IsPortInTcpListening(int port)
         {
-            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+            var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            var ipEndPoints = ipProperties.GetActiveTcpListeners();
 
-            foreach (IPEndPoint endPoint in ipEndPoints)
-            {
+            foreach (var endPoint in ipEndPoints)
                 if (endPoint.Port == port)
-                {
                     return true;
-                }
-            }
             return false;
         }
-
-
     }
 }

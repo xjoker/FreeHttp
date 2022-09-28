@@ -1,29 +1,21 @@
-﻿using FreeHttp.FiddlerHelper;
-using FreeHttp.HttpHelper;
-using FreeHttp.MyHelper;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
-using static FreeHttp.FreeHttpControl.FreeHttpWindow;
+using FreeHttp.FiddlerHelper;
+using FreeHttp.MyHelper;
 
 namespace FreeHttp.FreeHttpControl
 {
     public partial class HttpFilterWindow : Form
     {
+        private readonly FiddlerHttpFilter httpFilter;
+        private readonly TamperProtocalType protocolMode;
+
         public HttpFilterWindow()
         {
             InitializeComponent();
         }
 
-        FiddlerHttpFilter httpFilter;
-        TamperProtocalType protocolMode;
-        public HttpFilterWindow(object filter , TamperProtocalType mode = TamperProtocalType.Http) :this()
+        public HttpFilterWindow(object filter, TamperProtocalType mode = TamperProtocalType.Http) : this()
         {
             httpFilter = filter as FiddlerHttpFilter;
             protocolMode = mode;
@@ -32,53 +24,51 @@ namespace FreeHttp.FreeHttpControl
         private void HttpFilterWindow_Load(object sender, EventArgs e)
         {
             //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
+            MaximumSize = Size;
+            MinimumSize = Size;
             tbe_urlFilter.Visible = tb_urlFilter.Focused;
             tbe_urlFilter.OnCloseEditBox += tbe_urlFilter_OnCloseEditBox;
             if (httpFilter == null)
             {
-                MessageBox.Show("your FiddlerHttpFilter is null","error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                this.Close();
+                MessageBox.Show("your FiddlerHttpFilter is null", "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
                 return;
             }
 
-            if(httpFilter.UriMatch!=null)
+            if (httpFilter.UriMatch != null)
             {
                 cb_macthUriMode.Text = httpFilter.UriMatch.MatchMode.ToString();
-                tb_urlFilter.Text = string.IsNullOrEmpty(httpFilter.UriMatch.MatchUri) ? "" : httpFilter.UriMatch.MatchUri;
+                tb_urlFilter.Text = string.IsNullOrEmpty(httpFilter.UriMatch.MatchUri)
+                    ? ""
+                    : httpFilter.UriMatch.MatchUri;
             }
             else
             {
                 cb_macthUriMode.SelectedIndex = 0;
             }
 
-            if(httpFilter.HeadMatch!=null)
-            {
-                foreach(var tempHeadsFilter in httpFilter.HeadMatch.HeadsFilter)
-                {
-                    FilterHeads.ListDataView.Items.Add(string.Format("{0}{1}{2}", tempHeadsFilter.Key, FilterHeads.SplitStr, tempHeadsFilter.Value));
-                }
-            }
+            if (httpFilter.HeadMatch != null)
+                foreach (var tempHeadsFilter in httpFilter.HeadMatch.HeadsFilter)
+                    FilterHeads.ListDataView.Items.Add(string.Format("{0}{1}{2}", tempHeadsFilter.Key,
+                        FilterHeads.SplitStr, tempHeadsFilter.Value));
 
-            if(httpFilter.BodyMatch!=null)
+            if (httpFilter.BodyMatch != null)
             {
                 cb_macthMode.Text = httpFilter.BodyMatch.MatchMode.ToString();
-                rtb_bodyFilter.Text = string.IsNullOrEmpty(httpFilter.BodyMatch.MatchUri) ? "" : httpFilter.BodyMatch.MatchUri;
+                rtb_bodyFilter.Text = string.IsNullOrEmpty(httpFilter.BodyMatch.MatchUri)
+                    ? ""
+                    : httpFilter.BodyMatch.MatchUri;
             }
             else
             {
                 cb_macthMode.SelectedIndex = 4;
             }
 
-            if(!string.IsNullOrEmpty(httpFilter.Name))
+            if (!string.IsNullOrEmpty(httpFilter.Name)) tb_RuleAlias.Text = httpFilter.Name;
+
+            if (protocolMode == TamperProtocalType.WebSocket)
             {
-                tb_RuleAlias.Text = httpFilter.Name;
-            }
-            
-            if(protocolMode == TamperProtocalType.WebSocket)
-            {
-                this.Text = "WebsocketFilterWindow";
+                Text = "WebsocketFilterWindow";
                 FilterHeads.Enabled = false;
                 lb_info_1.Text = "Payload Filter";
             }
@@ -86,12 +76,10 @@ namespace FreeHttp.FreeHttpControl
 
         private void bt_ok_Click(object sender, EventArgs e)
         {
-            FiddlerUriMatchMode matchUriMode = FiddlerUriMatchMode.AllPass;
-            if (!Enum.TryParse<FiddlerUriMatchMode>(cb_macthUriMode.Text, out matchUriMode))
-            {
+            var matchUriMode = FiddlerUriMatchMode.AllPass;
+            if (!Enum.TryParse(cb_macthUriMode.Text, out matchUriMode))
                 throw new Exception("get error FiddlerUriMatchMode");
-            }
-            if (httpFilter.UriMatch!=null)
+            if (httpFilter.UriMatch != null)
             {
                 httpFilter.UriMatch.MatchMode = matchUriMode;
                 httpFilter.UriMatch.MatchUri = tb_urlFilter.Text;
@@ -101,18 +89,19 @@ namespace FreeHttp.FreeHttpControl
                 httpFilter.UriMatch = new FiddlerUriMatch(matchUriMode, tb_urlFilter.Text);
             }
 
-            if(FilterHeads.ListDataView.Items.Count>0)
+            if (FilterHeads.ListDataView.Items.Count > 0)
             {
                 httpFilter.HeadMatch = new FiddlerHeadMatch();
                 foreach (ListViewItem tempLv in FilterHeads.ListDataView.Items)
                 {
-                    string tempStr = tempLv.Text;
+                    var tempStr = tempLv.Text;
                     string tempKey;
                     string tempVaule;
                     if (tempStr.Contains(FilterHeads.SplitStr))
                     {
                         tempKey = tempStr.Remove(tempStr.IndexOf(FilterHeads.SplitStr));
-                        tempVaule = tempStr.Substring(tempStr.IndexOf(FilterHeads.SplitStr) + FilterHeads.SplitStr.Length);
+                        tempVaule = tempStr.Substring(tempStr.IndexOf(FilterHeads.SplitStr) +
+                                                      FilterHeads.SplitStr.Length);
                         httpFilter.HeadMatch.AddHeadMatch(new MyKeyValuePair<string, string>(tempKey, tempVaule));
                     }
                     else
@@ -126,39 +115,31 @@ namespace FreeHttp.FreeHttpControl
                 httpFilter.HeadMatch = null;
             }
 
-            FiddlerUriMatchMode matchMode = FiddlerUriMatchMode.AllPass;
-            if (!Enum.TryParse<FiddlerUriMatchMode>(cb_macthMode.Text, out matchMode))
-            {
-                throw new Exception("get error FiddlerBodyMatchMode");
-            }
-            if (matchMode == FiddlerUriMatchMode.AllPass || (rtb_bodyFilter.Text == "" && matchMode != FiddlerUriMatchMode.Is))
-            {
-                    httpFilter.BodyMatch = null;
-            }
+            var matchMode = FiddlerUriMatchMode.AllPass;
+            if (!Enum.TryParse(cb_macthMode.Text, out matchMode)) throw new Exception("get error FiddlerBodyMatchMode");
+            if (matchMode == FiddlerUriMatchMode.AllPass ||
+                (rtb_bodyFilter.Text == "" && matchMode != FiddlerUriMatchMode.Is))
+                httpFilter.BodyMatch = null;
             else
-            {
                 try
                 {
                     httpFilter.BodyMatch = new FiddlerBodyMatch(matchMode, rtb_bodyFilter.Text);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("your body filter is illage \r\n{0}", ex.Message), "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    MessageBox.Show(string.Format("your body filter is illage \r\n{0}", ex.Message), "Stop",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
-            }
 
-            if (tb_RuleAlias.Text!=null)
-            {
-                httpFilter.Name = tb_RuleAlias.Text;
-            }
+            if (tb_RuleAlias.Text != null) httpFilter.Name = tb_RuleAlias.Text;
 
-            this.Close();
+            Close();
         }
 
         private void cb_macthMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(cb_macthMode.SelectedIndex==4)
+            if (cb_macthMode.SelectedIndex == 4)
             {
                 rtb_bodyFilter.Clear();
                 rtb_bodyFilter.Enabled = false;
@@ -170,7 +151,7 @@ namespace FreeHttp.FreeHttpControl
         }
 
 
-        void tbe_urlFilter_OnCloseEditBox(object sender, TextBoxEditer.CloseEditBoxEventArgs e)
+        private void tbe_urlFilter_OnCloseEditBox(object sender, TextBoxEditer.CloseEditBoxEventArgs e)
         {
             //如果主窗口失活导致编辑窗关闭，不会有textbox Leave的事件
             tbe_urlFilter.Visible = false;
@@ -189,11 +170,7 @@ namespace FreeHttp.FreeHttpControl
 
         private void tb_urlFilter_Leave(object sender, EventArgs e)
         {
-            if (!(tbe_urlFilter.IsShowEditRichTextBox))
-            {
-                tbe_urlFilter.Visible = false;
-            }
+            if (!tbe_urlFilter.IsShowEditRichTextBox) tbe_urlFilter.Visible = false;
         }
-
     }
 }

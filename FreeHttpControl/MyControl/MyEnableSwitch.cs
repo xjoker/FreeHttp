@@ -1,38 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FreeHttp.FreeHttpControl
 {
     public partial class MyEnableSwitch : UserControl
     {
+        private bool isEnable;
 
-        public class ChangeEnableEventArgs:EventArgs
-        {
-            public bool IsEnable{get; set;}
-            public ChangeEnableEventArgs(bool isEnable)
-            {
-                IsEnable = isEnable;
-            }
-        }
+        private readonly ComponentResourceManager myResources;
 
-        
 
         public MyEnableSwitch()
         {
             InitializeComponent();
-            myResources = new System.ComponentModel.ComponentResourceManager(typeof(MyEnableSwitch));
+            myResources = new ComponentResourceManager(typeof(MyEnableSwitch));
         }
-
-        System.ComponentModel.ComponentResourceManager myResources;
-        private bool isEnable;
-        public event EventHandler<ChangeEnableEventArgs> OnChangeEnable;
 
         [DescriptionAttribute("the TextBox that you want to binding")]
         /// <summary>
@@ -40,21 +24,32 @@ namespace FreeHttp.FreeHttpControl
         /// </summary>
         public bool IsEnable
         {
-            get { return isEnable; }
+            get => isEnable;
             set
             {
                 isEnable = value;
-                pb_switch.Image = isEnable ? ((Image)(myResources.GetObject("switch_on"))) : ((Image)(myResources.GetObject("switch_off")));
+                pb_switch.Image = isEnable
+                    ? (Image)myResources.GetObject("switch_on")
+                    : (Image)myResources.GetObject("switch_off");
             }
         }
+
+        public event EventHandler<ChangeEnableEventArgs> OnChangeEnable;
 
         private void pb_switch_Click(object sender, EventArgs e)
         {
             IsEnable = !IsEnable;
-            if(OnChangeEnable!=null)
+            if (OnChangeEnable != null) OnChangeEnable(this, new ChangeEnableEventArgs(IsEnable));
+        }
+
+        public class ChangeEnableEventArgs : EventArgs
+        {
+            public ChangeEnableEventArgs(bool isEnable)
             {
-                this.OnChangeEnable(this, new ChangeEnableEventArgs(IsEnable));
+                IsEnable = isEnable;
             }
+
+            public bool IsEnable { get; set; }
         }
     }
 }

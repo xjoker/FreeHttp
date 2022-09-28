@@ -1,33 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace FreeHttp.FreeHttpControl
 {
-    public class MarkControlService:IDisposable
+    public class MarkControlService : IDisposable
     {
-        /// <summary>
-        /// the information for the mark Control
-        /// </summary>
-        class RemindControlInfo
-        {
-            public int RemindTime { get; set; }
-            public Color OriginColor { get; set; }
-
-            public RemindControlInfo(int yourRemindTime, Color yourOriginColor)
-            {
-                RemindTime = yourRemindTime;
-                OriginColor = yourOriginColor;
-            }
-        }
-
-        Timer myTimer = new Timer();
-        Dictionary<ListViewItem, RemindControlInfo> remindItemDc;
-        Dictionary<Control, RemindControlInfo> remindControlDc;
+        private readonly Timer myTimer = new Timer();
+        private readonly Dictionary<Control, RemindControlInfo> remindControlDc;
+        private readonly Dictionary<ListViewItem, RemindControlInfo> remindItemDc;
 
         public MarkControlService(int clickTime)
         {
@@ -38,59 +22,61 @@ namespace FreeHttp.FreeHttpControl
             myTimer.Start();
         }
 
-        void myTimer_Tick(object sender, EventArgs e)
+        public void Dispose()
+        {
+            myTimer.Dispose();
+        }
+
+        private void myTimer_Tick(object sender, EventArgs e)
         {
             if (remindItemDc.Count > 0)
             {
                 //MyControlHelper.SetControlFreeze(lv_requestRuleList);
-                List<ListViewItem> tempRemoveItem = new List<ListViewItem>();
-                List<ListViewItem> tempHighlightList = new List<ListViewItem>();
+                var tempRemoveItem = new List<ListViewItem>();
+                var tempHighlightList = new List<ListViewItem>();
                 tempHighlightList.AddRange(remindItemDc.Keys);
                 foreach (var tempHighlightItem in tempHighlightList)
                 {
-                    if(tempHighlightItem==null)
+                    if (tempHighlightItem == null)
                     {
                         tempRemoveItem.Add(tempHighlightItem);
                         continue;
                     }
+
                     remindItemDc[tempHighlightItem].RemindTime--;
-                    if (remindItemDc[tempHighlightItem].RemindTime == 0)
-                    {
-                        tempRemoveItem.Add(tempHighlightItem);
-                    }
+                    if (remindItemDc[tempHighlightItem].RemindTime == 0) tempRemoveItem.Add(tempHighlightItem);
                 }
                 //MyControlHelper.SetControlUnfreeze(lv_requestRuleList);
 
-                System.Threading.Monitor.Enter(remindItemDc);
+                Monitor.Enter(remindItemDc);
                 foreach (var tempItem in tempRemoveItem)
                 {
                     tempItem.BackColor = remindItemDc[tempItem].OriginColor;
                     remindItemDc.Remove(tempItem);
                 }
-                System.Threading.Monitor.Exit(remindItemDc);
+
+                Monitor.Exit(remindItemDc);
             }
 
             if (remindControlDc.Count > 0)
             {
-                List<Control> tempRemoveControl = new List<Control>();
-                List<Control> tempRemindList = new List<Control>();
+                var tempRemoveControl = new List<Control>();
+                var tempRemindList = new List<Control>();
                 tempRemindList.AddRange(remindControlDc.Keys);
                 foreach (var tempRemindControl in tempRemindList)
                 {
                     remindControlDc[tempRemindControl].RemindTime--;
-                    if (remindControlDc[tempRemindControl].RemindTime == 0)
-                    {
-                        tempRemoveControl.Add(tempRemindControl);
-                    }
+                    if (remindControlDc[tempRemindControl].RemindTime == 0) tempRemoveControl.Add(tempRemindControl);
                 }
 
-                System.Threading.Monitor.Enter(remindControlDc);
+                Monitor.Enter(remindControlDc);
                 foreach (var tempItem in tempRemoveControl)
                 {
                     tempItem.BackColor = remindControlDc[tempItem].OriginColor;
                     remindControlDc.Remove(tempItem);
                 }
-                System.Threading.Monitor.Exit(remindControlDc);
+
+                Monitor.Exit(remindControlDc);
             }
         }
 
@@ -100,22 +86,18 @@ namespace FreeHttp.FreeHttpControl
             {
                 if (yourControl != null)
                 {
-                    System.Threading.Monitor.Enter(remindControlDc);
+                    Monitor.Enter(remindControlDc);
                     if (remindControlDc.ContainsKey(yourControl))
-                    {
-                        remindControlDc[yourControl] = new RemindControlInfo(yourShowTick, remindControlDc[yourControl].OriginColor);
-                    }
+                        remindControlDc[yourControl] =
+                            new RemindControlInfo(yourShowTick, remindControlDc[yourControl].OriginColor);
                     else
-                    {
                         remindControlDc.Add(yourControl, new RemindControlInfo(yourShowTick, yourControl.BackColor));
-                    }
-                    System.Threading.Monitor.Exit(remindControlDc);
+                    Monitor.Exit(remindControlDc);
                     yourControl.BackColor = yourColor;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-
             }
         }
 
@@ -125,22 +107,18 @@ namespace FreeHttp.FreeHttpControl
             {
                 if (yourItem != null)
                 {
-                    System.Threading.Monitor.Enter(remindItemDc);
+                    Monitor.Enter(remindItemDc);
                     if (remindItemDc.ContainsKey(yourItem))
-                    {
-                        remindItemDc[yourItem] = new RemindControlInfo(yourShowTick, remindItemDc[yourItem].OriginColor);
-                    }
+                        remindItemDc[yourItem] =
+                            new RemindControlInfo(yourShowTick, remindItemDc[yourItem].OriginColor);
                     else
-                    {
                         remindItemDc.Add(yourItem, new RemindControlInfo(yourShowTick, yourItem.BackColor));
-                    }
-                    System.Threading.Monitor.Exit(remindItemDc);
+                    Monitor.Exit(remindItemDc);
                     yourItem.BackColor = yourColor;
                 }
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -148,10 +126,7 @@ namespace FreeHttp.FreeHttpControl
         {
             if (yourControl != null)
             {
-                if (remindControlDc.ContainsKey(yourControl))
-                {
-                    remindControlDc.Remove(yourControl);
-                }
+                if (remindControlDc.ContainsKey(yourControl)) remindControlDc.Remove(yourControl);
                 yourControl.BackColor = yourColor;
             }
         }
@@ -160,17 +135,24 @@ namespace FreeHttp.FreeHttpControl
         {
             if (yourItem != null)
             {
-                if (remindItemDc.ContainsKey(yourItem))
-                {
-                    remindItemDc.Remove(yourItem);
-                }
+                if (remindItemDc.ContainsKey(yourItem)) remindItemDc.Remove(yourItem);
                 yourItem.BackColor = yourColor;
             }
         }
 
-        public void Dispose()
+        /// <summary>
+        ///     the information for the mark Control
+        /// </summary>
+        private class RemindControlInfo
         {
-            myTimer.Dispose();
+            public RemindControlInfo(int yourRemindTime, Color yourOriginColor)
+            {
+                RemindTime = yourRemindTime;
+                OriginColor = yourOriginColor;
+            }
+
+            public int RemindTime { get; set; }
+            public Color OriginColor { get; }
         }
     }
 }

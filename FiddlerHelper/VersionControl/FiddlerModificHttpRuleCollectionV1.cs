@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using FreeHttp.AutoTest.ParameterizationContent;
+using FreeHttp.HttpHelper;
+
 //using FiddlerRequsetChange = FreeHttp.FiddlerHelper.FiddlerRequestChange;
 
 
@@ -11,86 +12,99 @@ namespace FreeHttp.FiddlerHelper.VersionControlV1
     [Serializable]
     public class FiddlerModificHttpRuleCollection
     {
-        List<FiddlerRequsetChange> requestRuleList;
-        List<FiddlerResponseChange> responseRuleList;
-
-        //因为V1.0-V1.3 版本 FiddlerRequsetChange 这个英文拼错了 这里进行进行升级修复
-        public List<FiddlerRequsetChange> RequestRuleList { get { return requestRuleList; } set { requestRuleList = value; } }
-        public List<FiddlerResponseChange> ResponseRuleList { get { return responseRuleList; } set { responseRuleList = value; } }
+        private List<FiddlerRequsetChange> requestRuleList;
+        private List<FiddlerResponseChange> responseRuleList;
 
 
-        public FiddlerModificHttpRuleCollection()  // Serializable 需要空参数的构造函数
+        public FiddlerModificHttpRuleCollection() // Serializable 需要空参数的构造函数
         {
             requestRuleList = null;
             responseRuleList = null;
         }
 
-        public FiddlerModificHttpRuleCollection(List<FiddlerRequsetChange> yourRequestRuleList, List<FiddlerResponseChange> yourResponseRuleList)
+        public FiddlerModificHttpRuleCollection(List<FiddlerRequsetChange> yourRequestRuleList,
+            List<FiddlerResponseChange> yourResponseRuleList)
         {
             requestRuleList = yourRequestRuleList;
             responseRuleList = yourResponseRuleList;
         }
 
-        public static explicit operator FreeHttp.FiddlerHelper.FiddlerModificHttpRuleCollection(FiddlerModificHttpRuleCollection fiddlerModificHttpRuleCollectionV1)
+        //因为V1.0-V1.3 版本 FiddlerRequsetChange 这个英文拼错了 这里进行进行升级修复
+        public List<FiddlerRequsetChange> RequestRuleList
         {
-            List<FiddlerRequestChange> RequestRuleList = new List<FiddlerRequestChange>();
-            if(fiddlerModificHttpRuleCollectionV1.RequestRuleList!=null && fiddlerModificHttpRuleCollectionV1.RequestRuleList.Count>0)
-            {
-                foreach(FiddlerRequsetChange item in fiddlerModificHttpRuleCollectionV1.RequestRuleList)
-                {
+            get => requestRuleList;
+            set => requestRuleList = value;
+        }
+
+        public List<FiddlerResponseChange> ResponseRuleList
+        {
+            get => responseRuleList;
+            set => responseRuleList = value;
+        }
+
+        public static explicit operator FiddlerHelper.FiddlerModificHttpRuleCollection(
+            FiddlerModificHttpRuleCollection fiddlerModificHttpRuleCollectionV1)
+        {
+            var RequestRuleList = new List<FiddlerRequestChange>();
+            if (fiddlerModificHttpRuleCollectionV1.RequestRuleList != null &&
+                fiddlerModificHttpRuleCollectionV1.RequestRuleList.Count > 0)
+                foreach (var item in fiddlerModificHttpRuleCollectionV1.RequestRuleList)
                     RequestRuleList.Add(item.GetBase());
-                }
-            }
-            FreeHttp.FiddlerHelper.FiddlerModificHttpRuleCollection fiddlerModificHttpRuleCollection = new FreeHttp.FiddlerHelper.FiddlerModificHttpRuleCollection(RequestRuleList, fiddlerModificHttpRuleCollectionV1.ResponseRuleList);
-            
-            if(fiddlerModificHttpRuleCollection.RequestRuleList!=null && fiddlerModificHttpRuleCollection.RequestRuleList.Count>0)
-            {
-                foreach (FiddlerRequestChange item in fiddlerModificHttpRuleCollection.RequestRuleList)
+            var fiddlerModificHttpRuleCollection = new FiddlerHelper.FiddlerModificHttpRuleCollection(RequestRuleList,
+                fiddlerModificHttpRuleCollectionV1.ResponseRuleList);
+
+            if (fiddlerModificHttpRuleCollection.RequestRuleList != null &&
+                fiddlerModificHttpRuleCollection.RequestRuleList.Count > 0)
+                foreach (var item in fiddlerModificHttpRuleCollection.RequestRuleList)
                 {
-                    if(item.UriModific!=null && item.UriModific.ModificMode != HttpHelper.ContentModificMode.NoChange)
+                    if (item.UriModific != null && item.UriModific.ModificMode != ContentModificMode.NoChange)
                     {
-                        item.UriModific.ParameterReplaceContent = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.UriModific.ReplaceContent);
-                        item.UriModific.ParameterTargetKey = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.UriModific.TargetKey);
+                        item.UriModific.ParameterReplaceContent =
+                            new CaseParameterizationContent(item.UriModific.ReplaceContent);
+                        item.UriModific.ParameterTargetKey = new CaseParameterizationContent(item.UriModific.TargetKey);
                     }
-                    if (item.BodyModific != null && item.BodyModific.ModificMode != HttpHelper.ContentModificMode.NoChange)
+
+                    if (item.BodyModific != null && item.BodyModific.ModificMode != ContentModificMode.NoChange)
                     {
-                        item.BodyModific.ParameterReplaceContent = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.BodyModific.ReplaceContent);
-                        item.BodyModific.ParameterTargetKey = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.BodyModific.TargetKey);
+                        item.BodyModific.ParameterReplaceContent =
+                            new CaseParameterizationContent(item.BodyModific.ReplaceContent);
+                        item.BodyModific.ParameterTargetKey =
+                            new CaseParameterizationContent(item.BodyModific.TargetKey);
                     }
-                    if(item.IsRawReplace && item.HttpRawRequest.ParameterizationContent.hasParameter)
-                    {
+
+                    if (item.IsRawReplace && item.HttpRawRequest.ParameterizationContent.hasParameter)
                         item.IsHasParameter = true;
-                        //item.SetHasParameter(true);
-                    }
+                    //item.SetHasParameter(true);
                 }
-            }
-            if (fiddlerModificHttpRuleCollection.ResponseRuleList != null && fiddlerModificHttpRuleCollection.ResponseRuleList.Count > 0)
-            {
-                foreach (FiddlerResponseChange item in fiddlerModificHttpRuleCollection.ResponseRuleList)
+
+            if (fiddlerModificHttpRuleCollection.ResponseRuleList != null &&
+                fiddlerModificHttpRuleCollection.ResponseRuleList.Count > 0)
+                foreach (var item in fiddlerModificHttpRuleCollection.ResponseRuleList)
                 {
-                    if (item.BodyModific != null && item.BodyModific.ModificMode != HttpHelper.ContentModificMode.NoChange)
+                    if (item.BodyModific != null && item.BodyModific.ModificMode != ContentModificMode.NoChange)
                     {
-                        item.BodyModific.ParameterReplaceContent = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.BodyModific.ReplaceContent);
-                        item.BodyModific.ParameterTargetKey = new AutoTest.ParameterizationContent.CaseParameterizationContent(item.BodyModific.TargetKey);
+                        item.BodyModific.ParameterReplaceContent =
+                            new CaseParameterizationContent(item.BodyModific.ReplaceContent);
+                        item.BodyModific.ParameterTargetKey =
+                            new CaseParameterizationContent(item.BodyModific.TargetKey);
                     }
+
                     if (item.IsRawReplace && item.HttpRawResponse.ParameterizationContent.hasParameter)
-                    {
                         item.IsHasParameter = true;
-                        //item.SetHasParameter(true);
-                    }
+                    //item.SetHasParameter(true);
                 }
-            }
+
             return fiddlerModificHttpRuleCollection;
         }
     }
 
     [Serializable]
-    [System.Runtime.Serialization.DataContract()]
+    [DataContract]
     public class FiddlerRequsetChange : FiddlerRequestChange
     {
-       public FiddlerRequestChange GetBase()
+        public FiddlerRequestChange GetBase()
         {
-            FiddlerRequestChange fiddlerRequestChange = new FiddlerRequestChange();
+            var fiddlerRequestChange = new FiddlerRequestChange();
             fiddlerRequestChange.IsEnable = IsEnable;
             fiddlerRequestChange.TamperProtocol = TamperProtocol;
             fiddlerRequestChange.HttpFilter = HttpFilter;
@@ -105,5 +119,4 @@ namespace FreeHttp.FiddlerHelper.VersionControlV1
             return fiddlerRequestChange;
         }
     }
-
 }

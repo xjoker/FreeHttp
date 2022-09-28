@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FreeHttp.AutoTest.RunTimeStaticData
+﻿namespace FreeHttp.AutoTest.RunTimeStaticData
 {
     public enum CaseStaticDataType
     {
@@ -19,11 +13,11 @@ namespace FreeHttp.AutoTest.RunTimeStaticData
 
         caseStaticData_csv = 30000,
         caseStaticData_mysql = 30001,
-        caseStaticData_redis = 30002,
+        caseStaticData_redis = 30002
     }
 
     /// <summary>
-    /// 静态参数化数据大分类
+    ///     静态参数化数据大分类
     /// </summary>
     public enum CaseStaticDataClass
     {

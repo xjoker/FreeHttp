@@ -1,12 +1,8 @@
-﻿using FreeHttp.AutoTest.ParameterizationContent;
-using FreeHttp.AutoTest.RunTimeStaticData;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using FreeHttp.AutoTest.ParameterizationContent;
+using FreeHttp.AutoTest.RunTimeStaticData;
 
 namespace FreeHttp.HttpHelper
 {
@@ -14,16 +10,13 @@ namespace FreeHttp.HttpHelper
     [DataContract]
     public class ParameterHttpResponse : HttpResponse
     {
-        [DataMember]
-        public CaseParameterizationContent ParameterizationContent{ get; set; }
+        [NonSerialized] private ActuatorStaticDataCollection actuatorStaticDataCollection;
 
-        [NonSerialized] 
-        private ActuatorStaticDataCollection actuatorStaticDataCollection;
         public ParameterHttpResponse(string yourResponse, bool isParameter)
         {
             ParameterizationContent = new CaseParameterizationContent(yourResponse, isParameter);
             ParameterizationContent.encodetype = ParameterizationContentEncodingType.encode_default;
-            base.OriginSting = yourResponse;
+            OriginSting = yourResponse;
         }
 
         public ParameterHttpResponse()
@@ -38,6 +31,8 @@ namespace FreeHttp.HttpHelper
             ResponseEntity = httpResponse.ResponseEntity;
             OriginSting = httpResponse.OriginSting;
         }
+
+        [DataMember] public CaseParameterizationContent ParameterizationContent { get; set; }
 
         public void SetUseParameterInfo(bool isUseParameter, ActuatorStaticDataCollection yourStaticDataCollection)
         {
@@ -54,14 +49,16 @@ namespace FreeHttp.HttpHelper
         {
             nameValueCollection = null;
             errorMes = null;
-            if(ParameterizationContent.hasParameter)
+            if (ParameterizationContent.hasParameter)
             {
                 nameValueCollection = new NameValueCollection();
-                string newOriginSting = ParameterizationContent.GetTargetContentData(actuatorStaticDataCollection, nameValueCollection, out errorMes);
-                HttpResponse tempHttpResponse = HttpResponse.GetHttpResponse(newOriginSting);
+                var newOriginSting = ParameterizationContent.GetTargetContentData(actuatorStaticDataCollection,
+                    nameValueCollection, out errorMes);
+                var tempHttpResponse = GetHttpResponse(newOriginSting);
                 //tempHttpResponse.SetAutoContentLength();
                 return tempHttpResponse.GetRawHttpResponse();
             }
+
             return base.GetRawHttpResponse();
         }
 
@@ -72,29 +69,32 @@ namespace FreeHttp.HttpHelper
             if (ParameterizationContent.hasParameter)
             {
                 nameValueCollection = new NameValueCollection();
-                string newOriginSting = ParameterizationContent.GetTargetContentData(actuatorStaticDataCollection, nameValueCollection, out errorMes);
-                HttpResponse tempHttpResponse = HttpResponse.GetHttpResponse(newOriginSting);
+                var newOriginSting = ParameterizationContent.GetTargetContentData(actuatorStaticDataCollection,
+                    nameValueCollection, out errorMes);
+                var tempHttpResponse = GetHttpResponse(newOriginSting);
                 tempHttpResponse.SetAutoContentLength(); // if hasParameter SetAutoContentLength
                 return tempHttpResponse;
             }
+
             return this;
         }
 
         public static ParameterHttpResponse GetHttpResponse(string yourResponse, bool isParameter)
         {
             ParameterHttpResponse returnPrameterHttpResponse;
-            returnPrameterHttpResponse = new ParameterHttpResponse(HttpResponse.GetHttpResponse(yourResponse));
-            returnPrameterHttpResponse.ParameterizationContent = new CaseParameterizationContent(yourResponse, isParameter);
+            returnPrameterHttpResponse = new ParameterHttpResponse(GetHttpResponse(yourResponse));
+            returnPrameterHttpResponse.ParameterizationContent =
+                new CaseParameterizationContent(yourResponse, isParameter);
             return returnPrameterHttpResponse;
         }
 
-        public static ParameterHttpResponse GetHttpResponse(string yourResponse, bool isParameter, ActuatorStaticDataCollection yourActuatorStaticDataCollection)
+        public static ParameterHttpResponse GetHttpResponse(string yourResponse, bool isParameter,
+            ActuatorStaticDataCollection yourActuatorStaticDataCollection)
         {
-            ParameterHttpResponse returnPrameterHttpResponse = GetHttpResponse(yourResponse, isParameter);
+            var returnPrameterHttpResponse = GetHttpResponse(yourResponse, isParameter);
             //returnPrameterHttpResponse.actuatorStaticDataCollection = yourActuatorStaticDataCollection;
             returnPrameterHttpResponse.SetUseParameterInfo(isParameter, yourActuatorStaticDataCollection);
             return returnPrameterHttpResponse;
         }
-        
     }
 }

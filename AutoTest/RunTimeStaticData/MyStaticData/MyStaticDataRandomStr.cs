@@ -1,35 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
 {
     /// <summary>
-    /// 为StaticData提供随机字符串动态数据【IRunTimeStaticData】
+    ///     为StaticData提供随机字符串动态数据【IRunTimeStaticData】
     /// </summary>
-     [DataContract]
+    [DataContract]
     public class MyStaticDataRandomStr : IRunTimeStaticData
     {
-         [DataMember]
-        string myNowStr;
-         [DataMember]
-        int myStrNum;
-         [DataMember]
-        int myStrType;
+        [DataMember] private string myNowStr;
 
-         [DataMember]
-        public string OriginalConnectString { get; private set; }
-        public string RunTimeStaticDataTypeAlias
-        {
-            get { return "staticData_random"; }
-        }
-        public CaseStaticDataType RunTimeStaticDataType
-        {
-            get { return CaseStaticDataType.caseStaticData_random; }
-        }
+        [DataMember] private int myStrNum;
+
+        [DataMember] private int myStrType;
+
         public MyStaticDataRandomStr(int yourStrNum, int yourStrType)
         {
             myNowStr = "";
@@ -42,6 +26,12 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
         {
             OriginalConnectString = originalConnectString;
         }
+
+        [DataMember] public string OriginalConnectString { get; private set; }
+
+        public string RunTimeStaticDataTypeAlias => "staticData_random";
+
+        public CaseStaticDataType RunTimeStaticDataType => CaseStaticDataType.caseStaticData_random;
 
         public object Clone()
         {
@@ -72,6 +62,7 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
                 myNowStr = expectData;
                 return true;
             }
+
             return false;
         }
     }

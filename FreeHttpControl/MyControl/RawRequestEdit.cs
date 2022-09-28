@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using FreeHttp.HttpHelper;
 
@@ -44,11 +38,8 @@ namespace FreeHttp.FreeHttpControl
 
         private void pictureBox_changeMode_Click(object sender, EventArgs e)
         {
-            this.Visible = false;
-            if(OnRawRequestEditClose!=null)
-            {
-                this.OnRawRequestEditClose(this, null);
-            }
+            Visible = false;
+            if (OnRawRequestEditClose != null) OnRawRequestEditClose(this, null);
         }
     }
 }

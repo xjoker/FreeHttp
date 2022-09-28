@@ -1,5 +1,4 @@
-﻿
-namespace FreeHttp.FiddlerHelper
+﻿namespace FreeHttp.FiddlerHelper
 {
     public enum TamperProtocalType
     {

@@ -1,10 +1,10 @@
-﻿using FreeHttp.MyHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using FreeHttp.MyHelper;
 
 namespace FreeHttp.HttpHelper
 {
@@ -12,48 +12,106 @@ namespace FreeHttp.HttpHelper
     [DataContract]
     public class HttpRequest
     {
+        private byte[] rawRequest;
+        private byte[] requestEntity;
+        private List<MyKeyValuePair<string, string>> requestHeads;
         private string requestLine;
         private string requestMethod;
         private string requestUri;
         private string requestVersions;
-        private List<MyKeyValuePair<string, string>> requestHeads;
-        private byte[] requestEntity;
+
+        public HttpRequest()
+        {
+            RequestHeads = new List<MyKeyValuePair<string, string>>();
+            rawRequest = null;
+        }
 
         [DataMember]
         /// <summary>
         /// get or set the request line (it will updata RequestMethod,RequestUri,RequestVersions)
         /// </summary>
-        public string RequestLine { get { return requestLine; } set { SetRequestLine(value); ChangeRawData(); } }
+        public string RequestLine
+        {
+            get => requestLine;
+            set
+            {
+                SetRequestLine(value);
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         /// <summary>
         /// get or set the requst method (it will updata RequestLine)
         /// </summary>
-        public string RequestMethod { get { return requestMethod; } set { requestMethod = value; UpdataRequestLine(); ChangeRawData(); } }
+        public string RequestMethod
+        {
+            get => requestMethod;
+            set
+            {
+                requestMethod = value;
+                UpdataRequestLine();
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         /// <summary>
         /// get or set the requst uri (it will updata RequestLine)
         /// </summary>
-        public string RequestUri { get { return requestUri; } set { requestUri = value; UpdataRequestLine(); ChangeRawData(); } }
+        public string RequestUri
+        {
+            get => requestUri;
+            set
+            {
+                requestUri = value;
+                UpdataRequestLine();
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         /// <summary>
         /// get or set the requst versions (it will updata RequestLine)
         /// </summary>
-        public string RequestVersions { get { return requestVersions; } set { requestVersions = value; UpdataRequestLine(); ChangeRawData(); } }
+        public string RequestVersions
+        {
+            get => requestVersions;
+            set
+            {
+                requestVersions = value;
+                UpdataRequestLine();
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         /// <summary>
         /// get or set request heads (if you not set the List<MyKeyValuePair<string, string>> and just change or add a element ,the ChangeRawData() will not trigger ,so your should call ChangeRawData() )
         /// </summary>
-        public List<MyKeyValuePair<string, string>> RequestHeads { get { return requestHeads; } set { requestHeads = value; ChangeRawData(); } }
+        public List<MyKeyValuePair<string, string>> RequestHeads
+        {
+            get => requestHeads;
+            set
+            {
+                requestHeads = value;
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         /// <summary>
         /// get or set request body (if you not set the byte[] and just change or add a element ,the ChangeRawData() will not trigger ,so your should call ChangeRawData() )
         /// </summary>
-        public byte[] RequestEntity { get { return requestEntity; } set { requestEntity = value; ChangeRawData(); } }
+        public byte[] RequestEntity
+        {
+            get => requestEntity;
+            set
+            {
+                requestEntity = value;
+                ChangeRawData();
+            }
+        }
 
         [DataMember]
         //public string OriginSting { get; private set; }
@@ -62,42 +120,24 @@ namespace FreeHttp.HttpHelper
         /// </summary>
         public string OriginSting { get; set; }
 
-        private byte[] rawRequest;
-        public HttpRequest()
+        private void SetRequestLine(string yourRequestLine, bool isThrowException = true)
         {
-            RequestHeads = new List<MyKeyValuePair<string, string>>();
-            rawRequest = null;
-        }
-
-        private void SetRequestLine(string yourRequestLine,bool isThrowException =true)
-        {
-            if(yourRequestLine.Contains('\n') || string.IsNullOrWhiteSpace(yourRequestLine))
+            if (yourRequestLine.Contains('\n') || string.IsNullOrWhiteSpace(yourRequestLine))
             {
                 if (isThrowException)
-                {
                     throw new Exception("your line is empty");
-                }
-                else
-                {
-                    return;
-                }
+                return;
             }
-            string[] requestLineStrs = yourRequestLine.Split(new char[] { ' ' }, 3);
-            if (requestLineStrs.Length !=3)
+
+            var requestLineStrs = yourRequestLine.Split(new[] { ' ' }, 3);
+            if (requestLineStrs.Length != 3)
             {
                 if (isThrowException)
-                {
                     throw new Exception("error format in response line");
-                }
-                else
-                {
-                    return;
-                }
+                return;
             }
-            if (string.IsNullOrEmpty( requestLineStrs[1]))
-            {
-                throw new Exception("must specify a complete URI");
-            }
+
+            if (string.IsNullOrEmpty(requestLineStrs[1])) throw new Exception("must specify a complete URI");
             //RAW 报文在没有代理的情况下 请求行 里的http://host 是可以省略的
             //if(!(requestLineStrs[1].StartsWith("http://") || requestLineStrs[1].StartsWith("https://")|| requestLineStrs[1].StartsWith("ftp://")))
             //{
@@ -119,11 +159,12 @@ namespace FreeHttp.HttpHelper
 
         private void UpdataRequestLine()
         {
-            requestLine = string.Format("{0} {1} {2}", requestMethod == null ? "" : requestMethod, requestUri == null ? "" : requestUri, requestVersions == null ? "" : requestVersions);
+            requestLine = string.Format("{0} {1} {2}", requestMethod == null ? "" : requestMethod,
+                requestUri == null ? "" : requestUri, requestVersions == null ? "" : requestVersions);
         }
 
         /// <summary>
-        /// when you want refresh the GetRawHttpRequest cache call it
+        ///     when you want refresh the GetRawHttpRequest cache call it
         /// </summary>
         public void ChangeRawData()
         {
@@ -131,71 +172,60 @@ namespace FreeHttp.HttpHelper
         }
 
         /// <summary>
-        /// reset ContentLength with the accurate value
+        ///     reset ContentLength with the accurate value
         /// </summary>
         public void SetAutoContentLength()
         {
-            if (RequestHeads==null)
+            if (RequestHeads == null)
             {
                 RequestHeads = new List<MyKeyValuePair<string, string>>();
             }
             else
             {
-                List<MyKeyValuePair<string, string>> mvKvpList = new List<MyKeyValuePair<string, string>>();
-                foreach (MyKeyValuePair<string, string> kvp in RequestHeads)
-                {
+                var mvKvpList = new List<MyKeyValuePair<string, string>>();
+                foreach (var kvp in RequestHeads)
                     if (kvp.Key == "Content-Length")
-                    {
                         mvKvpList.Add(kvp);
-                    }
-                }
                 if (mvKvpList.Count > 0)
-                {
-                    foreach (MyKeyValuePair<string, string> kvp in mvKvpList)
-                    {
+                    foreach (var kvp in mvKvpList)
                         RequestHeads.Remove(kvp);
-                    }
-                }
             }
-            RequestHeads.Add(new MyKeyValuePair<string, string>("Content-Length", RequestEntity == null ? "0" : RequestEntity.Length.ToString()));
+
+            RequestHeads.Add(new MyKeyValuePair<string, string>("Content-Length",
+                RequestEntity == null ? "0" : RequestEntity.Length.ToString()));
         }
-        
+
         /// <summary>
-        /// Get the raw byte[] request (it will use cache ,if you want refresh it just call ChangeRawData() first)
+        ///     Get the raw byte[] request (it will use cache ,if you want refresh it just call ChangeRawData() first)
         /// </summary>
         /// <returns>request bytes</returns>
         public byte[] GetRawHttpRequest()
         {
             if (rawRequest == null)
             {
-                StringBuilder tempResponseSb = new StringBuilder();
+                var tempResponseSb = new StringBuilder();
                 tempResponseSb.AppendLine(RequestLine);
                 foreach (var tempHead in RequestHeads)
-                {
                     tempResponseSb.AppendLine(string.Format("{0}: {1}", tempHead.Key, tempHead.Value));
-                }
                 tempResponseSb.Append("\r\n");
                 if (RequestEntity != null)
-                {
                     rawRequest = Encoding.UTF8.GetBytes(tempResponseSb.ToString()).Concat(RequestEntity).ToArray();
-                }
                 else
-                {
                     rawRequest = Encoding.UTF8.GetBytes(tempResponseSb.ToString());
-                }
             }
+
             return rawRequest;
         }
 
         /// <summary>
-        /// Get HttpRequest from a raw data string (it will throw exception when find the error string)
-        /// in http heads and line it  segmentation with CRLF (\r\n) ,but in entity it usual use \n to new line
+        ///     Get HttpRequest from a raw data string (it will throw exception when find the error string)
+        ///     in http heads and line it  segmentation with CRLF (\r\n) ,but in entity it usual use \n to new line
         /// </summary>
         /// <param name="yourRequest">raw request string </param>
         /// <returns>HttpRequest</returns>
         public static HttpRequest GetHttpRequest(string yourRequest)
         {
-            HttpRequest httpRequest = new HttpRequest();
+            var httpRequest = new HttpRequest();
             httpRequest.OriginSting = yourRequest;
             if (yourRequest != null)
             {
@@ -203,10 +233,7 @@ namespace FreeHttp.HttpHelper
                 string tempString;
                 //ResponseLine
                 tempIndex = yourRequest.IndexOf("\r\n");
-                if (tempIndex < 1)
-                {
-                    throw new Exception("can not find request line");
-                }
+                if (tempIndex < 1) throw new Exception("can not find request line");
                 tempString = yourRequest.Substring(0, tempIndex);
                 httpRequest.SetRequestLine(tempString);
                 //ResponseHeads
@@ -218,16 +245,14 @@ namespace FreeHttp.HttpHelper
                     yourRequest = yourRequest.Remove(0, tempIndex + 2);
                     tempIndex = tempString.IndexOf(':');
                     if (tempIndex < 0)
-                    {
                         throw new Exception(string.Format("error format in response head [{0}]", tempString));
-                    }
-                    httpRequest.RequestHeads.Add(new MyKeyValuePair<string, string>(tempString.Substring(0, tempIndex), tempString.Remove(0, tempIndex + 1).TrimStart(' ')));
+                    httpRequest.RequestHeads.Add(new MyKeyValuePair<string, string>(tempString.Substring(0, tempIndex),
+                        tempString.Remove(0, tempIndex + 1).TrimStart(' ')));
                     tempIndex = yourRequest.IndexOf("\r\n");
                 }
+
                 if (tempIndex < 0)
-                {
                     throw new Exception("Please ensure that there is a single empty line after the HTTP headers.");
-                }
                 //ResponseEntity
                 yourRequest = yourRequest.Remove(0, tempIndex + 2);
                 if (yourRequest == "")
@@ -235,26 +260,23 @@ namespace FreeHttp.HttpHelper
                     httpRequest.RequestEntity = new byte[0];
                     return httpRequest;
                 }
-                else if (yourRequest.StartsWith("<<replace file path>>"))
+
+                if (yourRequest.StartsWith("<<replace file path>>"))
                 {
                     tempString = yourRequest.Remove(0, 21);
                     if (File.Exists(tempString))
-                    {
-                        using (FileStream fileStream = new FileStream(tempString, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using (var fileStream =
+                               new FileStream(tempString, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             if (fileStream.Length > int.MaxValue)
-                            {
-                                throw new Exception(string.Format("your file path in  ResponseEntity is too  large with {0}", tempString));
-                            }
+                                throw new Exception(string.Format(
+                                    "your file path in  ResponseEntity is too  large with {0}", tempString));
                             httpRequest.RequestEntity = new byte[fileStream.Length];
                             fileStream.Read(httpRequest.RequestEntity, 0, httpRequest.RequestEntity.Length);
                         }
-
-                    }
                     else
-                    {
-                        throw new Exception(string.Format("your file path in  ResponseEntity is not Exists with {0}", tempString));
-                    }
+                        throw new Exception(string.Format("your file path in  ResponseEntity is not Exists with {0}",
+                            tempString));
                 }
                 else
                 {
@@ -262,6 +284,7 @@ namespace FreeHttp.HttpHelper
                     httpRequest.RequestEntity = Encoding.UTF8.GetBytes(yourRequest);
                 }
             }
+
             return httpRequest;
         }
     }

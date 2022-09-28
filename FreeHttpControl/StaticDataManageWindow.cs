@@ -1,40 +1,34 @@
-﻿using FreeHttp.AutoTest.RunTimeStaticData;
-using FreeHttp.AutoTest.RunTimeStaticData.MyStaticData;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using FreeHttp.AutoTest.RunTimeStaticData;
+using FreeHttp.AutoTest.RunTimeStaticData.MyStaticData;
 
 namespace FreeHttp.FreeHttpControl
 {
-    partial class StaticDataManageWindow : MyBaseInfoWindow
+    internal partial class StaticDataManageWindow : MyBaseInfoWindow
     {
         public enum ShowRunTimeParameterType
         {
             KeyValue = 0,
             Parameter = 1,
-            DataSouce=2
+            DataSouce = 2
         }
+
+        private ActuatorStaticDataCollection actuatorStaticDataCollection;
+        private ListViewItem nowEditItem;
+
+
+        private ShowRunTimeParameterType nowShowType = ShowRunTimeParameterType.KeyValue;
 
         public StaticDataManageWindow(ActuatorStaticDataCollection yourActuatorStaticDataCollection)
         {
             InitializeComponent();
             actuatorStaticDataCollection = yourActuatorStaticDataCollection;
             if (yourActuatorStaticDataCollection != null)
-            {
                 actuatorStaticDataCollection.OnChangeCollection += actuatorStaticDataCollection_OnChangeCollection;
-            }
         }
-
-
-
-        private ShowRunTimeParameterType nowShowType = ShowRunTimeParameterType.KeyValue;
-        private ListViewItem nowEditItem = null;
-        private ActuatorStaticDataCollection actuatorStaticDataCollection = null;
 
         public override void VirtualUpdataTime_Tick()
         {
@@ -47,21 +41,23 @@ namespace FreeHttp.FreeHttpControl
             if (actuatorStaticDataCollection == null)
             {
                 MessageBox.Show("actuatorStaticDataCollection is null");
-                this.Close();
+                Close();
             }
+
             ShowInfoChange(nowShowType);
         }
 
         private void StaticDataManageWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(actuatorStaticDataCollection!=null)
+            if (actuatorStaticDataCollection != null)
             {
                 actuatorStaticDataCollection.OnChangeCollection -= actuatorStaticDataCollection_OnChangeCollection;
                 actuatorStaticDataCollection = null;
             }
         }
 
-        void actuatorStaticDataCollection_OnChangeCollection(object sender, ActuatorStaticDataCollection.ChangeDataEventArgs e)
+        private void actuatorStaticDataCollection_OnChangeCollection(object sender,
+            ActuatorStaticDataCollection.ChangeDataEventArgs e)
         {
             UpdatalistView_CaseParameter(e.IsAddOrDel);
         }
@@ -69,90 +65,77 @@ namespace FreeHttp.FreeHttpControl
         private void lb_info_runTimeParameter_Click(object sender, EventArgs e)
         {
             ShowRunTimeParameterType hereType;
-            if (Enum.TryParse<ShowRunTimeParameterType>(((Label)sender).Text, out hereType))
-            {
-                ShowInfoChange(hereType);
-            }
+            if (Enum.TryParse(((Label)sender).Text, out hereType)) ShowInfoChange(hereType);
         }
 
         private void listView_CaseParameter_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listView_CaseParameter.SelectedItems.Count > 0)
-            {
-                EditItemChange(listView_CaseParameter.SelectedItems[0]);
-            }
+            if (listView_CaseParameter.SelectedItems.Count > 0) EditItemChange(listView_CaseParameter.SelectedItems[0]);
         }
 
         private void listView_CaseParameter_DoubleClick(object sender, EventArgs e)
         {
-            
-            if(listView_CaseParameter.SelectedItems!=null&& listView_CaseParameter.SelectedItems.Count>0)
-            {
+            if (listView_CaseParameter.SelectedItems != null && listView_CaseParameter.SelectedItems.Count > 0)
                 if (listView_CaseParameter.SelectedItems[0].Tag is MyStaticDataSourceCsv)
                 {
-                    MyStaticDataSourceCsv nowDataSourceCsv = (MyStaticDataSourceCsv)listView_CaseParameter.SelectedItems[0].Tag;
+                    var nowDataSourceCsv = (MyStaticDataSourceCsv)listView_CaseParameter.SelectedItems[0].Tag;
                     //ShowSheetForm f = new ShowSheetForm("", nowDataSourceCsv.GetDataSource());
-                    EditSheetForm f = new EditSheetForm(listView_CaseParameter.SelectedItems[0].SubItems[0].Text, nowDataSourceCsv.GetDataSource(), nowDataSourceCsv.GetDataLocation());
+                    var f = new EditSheetForm(listView_CaseParameter.SelectedItems[0].SubItems[0].Text,
+                        nowDataSourceCsv.GetDataSource(), nowDataSourceCsv.GetDataLocation());
                     f.StartPosition = FormStartPosition.CenterScreen;
                     f.SaveSheetData += editSheetForm_SaveSheetData;
                     f.ShowDialog();
                 }
-            }
         }
 
-        void editSheetForm_SaveSheetData(object sender, EditSheetForm.SaveSheetDataEventArgs e)
+        private void editSheetForm_SaveSheetData(object sender, EditSheetForm.SaveSheetDataEventArgs e)
         {
-            if (e.SheetData != null && listView_CaseParameter.SelectedItems != null && listView_CaseParameter.SelectedItems.Count > 0)
-            {
+            if (e.SheetData != null && listView_CaseParameter.SelectedItems != null &&
+                listView_CaseParameter.SelectedItems.Count > 0)
                 if (listView_CaseParameter.SelectedItems[0].Tag is MyStaticDataSourceCsv)
                 {
-                    MyStaticDataSourceCsv nowDataSourceCsv = (MyStaticDataSourceCsv)listView_CaseParameter.SelectedItems[0].Tag;
-                    if(nowDataSourceCsv.SetDataSource(e.SheetData))
+                    var nowDataSourceCsv = (MyStaticDataSourceCsv)listView_CaseParameter.SelectedItems[0].Tag;
+                    if (nowDataSourceCsv.SetDataSource(e.SheetData))
                     {
                         if (e.SelectCell != null)
-                        {
                             nowDataSourceCsv.SetDataLocation(e.SelectCell.Value.Y, e.SelectCell.Value.X);
-                        }
                         UpdatalistView_CaseParameter(false);
                     }
                     else
                     {
-                        MessageBox.Show("you data is empty \nplease check it ", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        MessageBox.Show("you data is empty \nplease check it ", "Stop", MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
                         return;
                     }
-                    if(nowEditItem!=null)
-                    {
-                        tb_valueAdd.Text = nowEditItem.SubItems[2].Text;
-                    }
+
+                    if (nowEditItem != null) tb_valueAdd.Text = nowEditItem.SubItems[2].Text;
                 }
-            }
         }
 
         private void listView_CaseParameter_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (listView_CaseParameter.SelectedItems != null && listView_CaseParameter.SelectedItems.Count > 0)
-            {
                 //this.DoDragDrop(listView_CaseParameter.SelectedItems, DragDropEffects.Move);
-                this.DoDragDrop(string.Format("*#{0}(+)*#", listView_CaseParameter.SelectedItems[0].SubItems[0].Text), DragDropEffects.Move);
-            }
+                DoDragDrop(string.Format("*#{0}(+)*#", listView_CaseParameter.SelectedItems[0].SubItems[0].Text),
+                    DragDropEffects.Move);
         }
 
         private void pictureBox_controlData_Click(object sender, EventArgs e)
         {
-            if (nowEditItem==null)
+            if (nowEditItem == null)
             {
                 MessageBox.Show("can not find edit Parameter Data", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            IRunTimeStaticData editRunTimeStaticData = (IRunTimeStaticData)nowEditItem.Tag;
-            if(sender == pb_edit)
+
+            var editRunTimeStaticData = (IRunTimeStaticData)nowEditItem.Tag;
+            if (sender == pb_edit)
             {
                 if (!editRunTimeStaticData.DataSet(tb_valueAdd.Text))
-                {
-                    MessageBox.Show(string.Format("{0} is illegal for this RunTimeStaticData", tb_valueAdd.Text), "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                }
+                    MessageBox.Show(string.Format("{0} is illegal for this RunTimeStaticData", tb_valueAdd.Text),
+                        "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
-            else if(sender == pb_next)
+            else if (sender == pb_next)
             {
                 editRunTimeStaticData.DataMoveNext();
             }
@@ -164,36 +147,31 @@ namespace FreeHttp.FreeHttpControl
             {
                 MessageBox.Show("can not find edit data", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
+
             FreeHttpWindow.MarkRuleItem(nowEditItem);
             nowEditItem.SubItems[2].Text = tb_valueAdd.Text = editRunTimeStaticData.DataCurrent();
         }
 
         private void pb_addStaticData_Click(object sender, EventArgs e)
         {
-            StaticDataAddWindow f = new StaticDataAddWindow(actuatorStaticDataCollection, (int)nowShowType, ShowInfoChange);
+            var f = new StaticDataAddWindow(actuatorStaticDataCollection, (int)nowShowType, ShowInfoChange);
             f.ShowDialog();
         }
 
         private void pb_delStaticData_Click(object sender, EventArgs e)
         {
             if (listView_CaseParameter.SelectedItems.Count > 0)
-            {
-                foreach(ListViewItem teamItem in listView_CaseParameter.SelectedItems)
+                foreach (ListViewItem teamItem in listView_CaseParameter.SelectedItems)
                 {
                     actuatorStaticDataCollection.RemoveStaticData(teamItem.SubItems[0].Text, false);
-                    if (nowEditItem == teamItem)
-                    {
-                        EditItemChange(null);
-                    }
+                    if (nowEditItem == teamItem) EditItemChange(null);
                 }
-            }
             else
-            {
                 MessageBox.Show("please select the static data items that your want remove");
-            }
         }
 
         #region public event helper
+
         private void lb_info_MouseMove(object sender, MouseEventArgs e)
         {
             ((Label)sender).BackColor = Color.LavenderBlush;
@@ -215,10 +193,12 @@ namespace FreeHttp.FreeHttpControl
         {
             ((PictureBox)sender).BackColor = Color.Transparent;
         }
+
         #endregion
 
 
         #region innerFunction
+
         private void ShowInfoChange(ShowRunTimeParameterType showParameter)
         {
             switch (showParameter)
@@ -242,6 +222,7 @@ namespace FreeHttp.FreeHttpControl
                     MessageBox.Show("nonsupport static data type");
                     break;
             }
+
             EditItemChange(null);
             UpdatalistView_CaseParameter(true);
         }
@@ -275,6 +256,7 @@ namespace FreeHttp.FreeHttpControl
                     MessageBox.Show("nonsupport static data type");
                     break;
             }
+
             editStaticData = nowEditItem.Tag as IRunTimeStaticData;
             if (editStaticData == null)
             {
@@ -282,7 +264,9 @@ namespace FreeHttp.FreeHttpControl
                 pb_edit.Enabled = pb_next.Enabled = pb_reset.Enabled = false;
                 return;
             }
-            label_info.Text = string.Format("Data Origin : {0} [eg:{1}]", editStaticData.OriginalConnectString, CaseRunTimeDataTypeEngine.dictionaryStaticDataAnnotation[editStaticData.RunTimeStaticDataType][1]); 
+
+            label_info.Text = string.Format("Data Origin : {0} [eg:{1}]", editStaticData.OriginalConnectString,
+                CaseRunTimeDataTypeEngine.dictionaryStaticDataAnnotation[editStaticData.RunTimeStaticDataType][1]);
         }
 
         [MethodImplAttribute(MethodImplOptions.Synchronized)]
@@ -313,36 +297,39 @@ namespace FreeHttp.FreeHttpControl
                             MessageBox.Show("nonsupport static data type");
                             break;
                     }
+
                     if (tempUpdateDictionary != null && tempUpdateDictionary.Count > 0)
-                    {
                         foreach (var tempKvp in tempUpdateDictionary)
                         {
-                            ListViewItem tempItem = new ListViewItem(new string[] { tempKvp.Key, CaseRunTimeDataTypeEngine.dictionaryStaticDataAnnotation[tempKvp.Value.RunTimeStaticDataType][0], tempKvp.Value.DataCurrent() });
+                            var tempItem = new ListViewItem(new string[]
+                            {
+                                tempKvp.Key,
+                                CaseRunTimeDataTypeEngine.dictionaryStaticDataAnnotation[
+                                    tempKvp.Value.RunTimeStaticDataType][0],
+                                tempKvp.Value.DataCurrent()
+                            });
                             tempItem.Tag = tempKvp.Value;
                             listView_CaseParameter.Items.Add(tempItem);
                         }
-                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
+
                 listView_CaseParameter.EndUpdate();
                 MyControlHelper.SetControlUnfreeze(listView_CaseParameter);
             }
             else
             {
                 foreach (ListViewItem tempItem in listView_CaseParameter.Items)
-                {
                     if (actuatorStaticDataCollection.IsHaveSameKey(tempItem.SubItems[0].Text))
                     {
-                        IRunTimeStaticData tempStaticData = tempItem.Tag as IRunTimeStaticData;
+                        var tempStaticData = tempItem.Tag as IRunTimeStaticData;
                         if (tempStaticData != null)
                         {
-                            if(tempItem.SubItems[2].Text != tempStaticData.DataCurrent())
-                            {
+                            if (tempItem.SubItems[2].Text != tempStaticData.DataCurrent())
                                 tempItem.SubItems[2].Text = tempStaticData.DataCurrent();
-                            }
                         }
                         else
                         {
@@ -355,11 +342,9 @@ namespace FreeHttp.FreeHttpControl
                         UpdatalistView_CaseParameter(true);
                         return;
                     }
-                }
             }
         }
 
         #endregion
-   
     }
 }

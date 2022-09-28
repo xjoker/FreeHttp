@@ -1,39 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
 {
     /// <summary>
-    /// 为StaticData提供类似索引递增的动态数据【IRunTimeStaticData】
+    ///     为StaticData提供类似索引递增的动态数据【IRunTimeStaticData】
     /// </summary>
     [DataContract]
     public class MyStaticDataIndex : IRunTimeStaticData
     {
-        [DataMember]
-        private bool isNew;
-        [DataMember]
-        private int dataIndex;
-        [DataMember]
-        private int defaultStart;
-        [DataMember]
-        private int defaultEnd;
-        [DataMember]
-        private int defaultStep;
+        [DataMember] private int dataIndex;
 
-        [DataMember]
-        public string OriginalConnectString { get; private set; }
-        public string RunTimeStaticDataTypeAlias
-        {
-            get { return "staticData_index"; }
-        }
-        public CaseStaticDataType RunTimeStaticDataType
-        {
-            get { return CaseStaticDataType.caseStaticData_index; }
-        }
+        [DataMember] private int defaultEnd;
+
+        [DataMember] private int defaultStart;
+
+        [DataMember] private int defaultStep;
+
+        [DataMember] private bool isNew;
+
         public MyStaticDataIndex(int yourStart, int yourEnd, int yourStep)
         {
             isNew = true;
@@ -48,6 +33,12 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
             OriginalConnectString = originalConnectString;
         }
 
+        [DataMember] public string OriginalConnectString { get; private set; }
+
+        public string RunTimeStaticDataTypeAlias => "staticData_index";
+
+        public CaseStaticDataType RunTimeStaticDataType => CaseStaticDataType.caseStaticData_index;
+
         public object Clone()
         {
             return new MyStaticDataIndex(defaultStart, defaultEnd, defaultStep);
@@ -59,7 +50,7 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
             return dataIndex.ToString();
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public string DataMoveNext()
         {
             if (isNew)
@@ -67,15 +58,14 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
                 isNew = false;
                 return dataIndex.ToString();
             }
+
             if (dataIndex >= defaultEnd)
             {
                 DataReset();
                 return DataMoveNext();
             }
-            else
-            {
-                dataIndex += defaultStep;
-            }
+
+            dataIndex += defaultStep;
             return dataIndex.ToString();
         }
 
@@ -91,15 +81,13 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
         {
             int tempData;
             if (int.TryParse(expectData, out tempData))
-            {
                 if (tempData >= defaultStart && tempData <= defaultEnd)
                 {
                     dataIndex = tempData;
                     return true;
                 }
-            }
+
             return false;
         }
-
     }
 }

@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FreeHttp.FreeHttpControl
@@ -17,15 +10,14 @@ namespace FreeHttp.FreeHttpControl
             InitializeComponent();
         }
 
-        public ShowTextForm(string name,string textInfo):this()
+        public ShowTextForm(string name, string textInfo) : this()
         {
-            this.Text = string.IsNullOrEmpty(name) ? "" : name;
-            if (textInfo!=null){ rtb_textInfo.AppendText(textInfo); }
+            Text = string.IsNullOrEmpty(name) ? "" : name;
+            if (textInfo != null) rtb_textInfo.AppendText(textInfo);
         }
 
         private void ShowTextForm_Load(object sender, EventArgs e)
         {
-
-        } 
+        }
     }
 }

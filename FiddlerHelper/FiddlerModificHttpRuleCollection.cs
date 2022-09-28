@@ -1,32 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace FreeHttp.FiddlerHelper
 {
     [Serializable]
     public class FiddlerModificHttpRuleCollection
     {
-        List<FiddlerRequestChange> requestRuleList;
-        List<FiddlerResponseChange> responseRuleList;
-
-        public List<FiddlerRequestChange> RequestRuleList { get { return requestRuleList; } set { requestRuleList = value; } }
-        public List<FiddlerResponseChange> ResponseRuleList { get { return responseRuleList; } set { responseRuleList = value; } }
+        private List<FiddlerRequestChange> requestRuleList;
+        private List<FiddlerResponseChange> responseRuleList;
 
 
-        public FiddlerModificHttpRuleCollection()  // Serializable 需要空参数的构造函数
+        public FiddlerModificHttpRuleCollection() // Serializable 需要空参数的构造函数
         {
             requestRuleList = null;
             responseRuleList = null;
         }
 
-        public FiddlerModificHttpRuleCollection(List<FiddlerRequestChange> yourRequestRuleList, List<FiddlerResponseChange> yourResponseRuleList)
+        public FiddlerModificHttpRuleCollection(List<FiddlerRequestChange> yourRequestRuleList,
+            List<FiddlerResponseChange> yourResponseRuleList)
         {
             requestRuleList = yourRequestRuleList;
             responseRuleList = yourResponseRuleList;
+        }
+
+        public List<FiddlerRequestChange> RequestRuleList
+        {
+            get => requestRuleList;
+            set => requestRuleList = value;
+        }
+
+        public List<FiddlerResponseChange> ResponseRuleList
+        {
+            get => responseRuleList;
+            set => responseRuleList = value;
         }
     }
 }

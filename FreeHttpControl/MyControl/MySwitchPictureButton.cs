@@ -1,81 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FreeHttp.FreeHttpControl
 {
-    class MySwitchPictureButton : PictureBox
+    internal class MySwitchPictureButton : PictureBox
     {
+        private Image switchOnImage;
+
+        private bool switchState = true;
+
         public MySwitchPictureButton()
         {
-            this.Cursor = Cursors.Hand;
-            this.SizeMode = PictureBoxSizeMode.StretchImage;
+            Cursor = Cursors.Hand;
+            SizeMode = PictureBoxSizeMode.StretchImage;
             //if(IsAutoChangeSwitchState)
             //{
             //    this.Click += (sender, e) => { SwitchState = !SwitchState; };
             //}
         }
 
-       
 
         [DescriptionAttribute("Is auto change switchState when click")]
         public bool IsAutoChangeSwitchState { get; set; } = false;
 
         /// <summary>
-        /// 备用状态显示的图片
+        ///     备用状态显示的图片
         /// </summary>
         [DescriptionAttribute("Image when switchState is false")]
         public Image SwitchOffImage { get; set; }
 
-
-        private Image switchOnImage;
-
         /// <summary>
-        /// 主要状态显示的图片
+        ///     主要状态显示的图片
         /// </summary>
         [DescriptionAttribute("Image when switchState is true")]
-        public Image SwitchOnImage { get { return switchOnImage; } set { switchOnImage = this.switchOnImage = value; } }
-
-        private bool switchState = true;
+        public Image SwitchOnImage
+        {
+            get => switchOnImage;
+            set => switchOnImage = switchOnImage = value;
+        }
 
         public bool SwitchState
         {
-            get { return switchState; }
+            get => switchState;
             set
             {
                 switchState = value;
-                if(switchState)
+                if (switchState)
                 {
-                    if(SwitchOnImage!=null)
-                    {
-                        this.Image = SwitchOnImage;
-                    }
+                    if (SwitchOnImage != null) Image = SwitchOnImage;
                 }
                 else
                 {
-                    if (SwitchOffImage != null)
-                    {
-                        this.Image = SwitchOffImage;
-                    }
+                    if (SwitchOffImage != null) Image = SwitchOffImage;
                 }
             }
         }
 
         protected override void OnClick(EventArgs e)
         {
-            if (IsAutoChangeSwitchState)
-            {
-                SwitchState = !SwitchState;
-            }
+            if (IsAutoChangeSwitchState) SwitchState = !SwitchState;
             base.OnClick(e);
             //else
             //{
-                
+
             //}
         }
 
@@ -100,6 +89,5 @@ namespace FreeHttp.FreeHttpControl
         {
             ((PictureBox)sender).BackColor = Color.Transparent;
         }
-
     }
 }

@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FreeHttp.FreeHttpControl
 {
     public partial class RemoveHead : Form
     {
-        ListView editListView;
-        bool isAdd;
-        bool isUnique;   //is not allow repetition
+        private readonly ListView editListView;
+        private readonly bool isAdd;
+        private readonly bool isUnique; //is not allow repetition
 
         public RemoveHead(ListView yourEditListView, bool yourIsAdd)
-            : this(yourEditListView, yourIsAdd, false) { }
+            : this(yourEditListView, yourIsAdd, false)
+        {
+        }
 
         public RemoveHead(ListView yourEditListView, bool yourIsAdd, bool yourIsUnique)
         {
@@ -29,14 +24,10 @@ namespace FreeHttp.FreeHttpControl
 
         private void RemoveHead_Load(object sender, EventArgs e)
         {
-            if (!isAdd)
-            {
-                tb_key.Text = editListView.SelectedItems[0].Text;
-            }
+            if (!isAdd) tb_key.Text = editListView.SelectedItems[0].Text;
             //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
-            
+            MaximumSize = Size;
+            MinimumSize = Size;
         }
 
         private void bt_ok_Click(object sender, EventArgs e)
@@ -47,34 +38,23 @@ namespace FreeHttp.FreeHttpControl
             }
             else
             {
-                string tempItemStr = tb_key.Text;
+                var tempItemStr = tb_key.Text;
                 if (isUnique)
-                {
                     foreach (ListViewItem tempItem in editListView.Items)
-                    {
                         if (tempItem.Text == tempItemStr)
                         {
-                            if (!isAdd && tempItem == editListView.SelectedItems[0])
-                            {
-                                continue;
-                            }
-                            MessageBox.Show("Find the same data in the list", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                            if (!isAdd && tempItem == editListView.SelectedItems[0]) continue;
+                            MessageBox.Show("Find the same data in the list", "Stop", MessageBoxButtons.OK,
+                                MessageBoxIcon.Stop);
                             return;
                         }
-                    }
-                }
+
                 if (isAdd)
-                {
                     editListView.Items.Add(tempItemStr);
-                }
                 else
-                {
                     editListView.SelectedItems[0].Text = tempItemStr;
-                }
-                this.Close();
+                Close();
             }
         }
-
-       
     }
 }

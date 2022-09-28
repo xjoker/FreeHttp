@@ -1,27 +1,25 @@
-﻿using FreeHttp.AutoTest.RunTimeStaticData;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FreeHttp.AutoTest.RunTimeStaticData;
 
 namespace FreeHttp.AutoTest.ParameterizationContent
 {
     public static class ParameterizationContentHelper
     {
-
         //仅用于【caseParameterizationContent】内部
         //如果没有任何valid identification，直接返回原始数据，不报错（为实现最大兼容）
         /// <summary>
-        /// get the getTargetContentData in caseParameterizationContent
+        ///     get the getTargetContentData in caseParameterizationContent
         /// </summary>
         /// <param name="yourSourceData">Source Data</param>
         /// <param name="yourParameterList">ParameterList</param>
         /// <param name="yourStaticDataList">StaticDataList</param>
         /// <param name="errorMessage">error Message</param>
         /// <returns></returns>
-        public static string GetCurrentParametersData(string yourSourceData, string splitStr, ActuatorStaticDataCollection yourActuatorStaticDataCollection, NameValueCollection yourDataResultCollection, out string errorMessage)
+        public static string GetCurrentParametersData(string yourSourceData, string splitStr,
+            ActuatorStaticDataCollection yourActuatorStaticDataCollection, NameValueCollection yourDataResultCollection,
+            out string errorMessage)
         {
             errorMessage = null;
             if (yourSourceData.Contains(splitStr))
@@ -43,20 +41,25 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                         errorMessage = string.Format("the identification  not enough in Source[{0}]", yourSourceData);
                         return yourSourceData;
                     }
-                    tempKeyVaule = yourSourceData.Substring(tempStart + splitStr.Length, tempEnd - (tempStart + splitStr.Length));
+
+                    tempKeyVaule = yourSourceData.Substring(tempStart + splitStr.Length,
+                        tempEnd - (tempStart + splitStr.Length));
                     keyParameter = TryGetParametersAdditionData(tempKeyVaule, out keyAdditionData);
                     if (keyAdditionData != null)
-                    {
-                        keyAdditionData = GetCurrentParametersData(keyAdditionData, MyConfiguration.ParametersExecuteSplitStr, yourActuatorStaticDataCollection, yourDataResultCollection, out errorMessage);
-                    }
+                        keyAdditionData = GetCurrentParametersData(keyAdditionData,
+                            MyConfiguration.ParametersExecuteSplitStr, yourActuatorStaticDataCollection,
+                            yourDataResultCollection, out errorMessage);
 
                     Func<string> DealErrorAdditionData = () =>
                     {
                         tempVaule = "[ErrorData]";
-                        return string.Format("ParametersAdditionData error find in the runTime data with keyParameter:[{0}] keyAdditionData:[{1}]", keyParameter, keyAdditionData);
+                        return string.Format(
+                            "ParametersAdditionData error find in the runTime data with keyParameter:[{0}] keyAdditionData:[{1}]",
+                            keyParameter, keyAdditionData);
                     };
 
                     #region RunTimeStaticKey
+
                     if (yourParameterList.Keys.Contains(keyParameter))
                     {
                         //RunTimeParameter 不含有参数信息，所以不处理keyParameter
@@ -64,9 +67,11 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                         yourSourceData = yourSourceData.Replace(splitStr + tempKeyVaule + splitStr, tempVaule);
                         yourDataResultCollection.MyAdd(tempKeyVaule, tempVaule);
                     }
+
                     #endregion
 
                     #region RunTimeStaticParameter
+
                     else if (yourStaticDataList.Keys.Contains(keyParameter))
                     {
                         if (keyAdditionData == null)
@@ -88,10 +93,7 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                             {
                                 if (tempTimes > 0)
                                 {
-                                    for (int i = 0; i < tempTimes; i++)
-                                    {
-                                        yourStaticDataList[keyParameter].DataMoveNext();
-                                    }
+                                    for (var i = 0; i < tempTimes; i++) yourStaticDataList[keyParameter].DataMoveNext();
                                     tempVaule = yourStaticDataList[keyParameter].DataCurrent();
                                 }
                                 else
@@ -108,12 +110,15 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                         {
                             errorMessage = DealErrorAdditionData();
                         }
+
                         yourSourceData = yourSourceData.Replace(splitStr + tempKeyVaule + splitStr, tempVaule);
                         yourDataResultCollection.MyAdd(tempKeyVaule, tempVaule);
                     }
+
                     #endregion
 
                     #region RunTimeStaticDataSource
+
                     else if (yourStaticDataSourceList.Keys.Contains(keyParameter))
                     {
                         if (keyAdditionData == null)
@@ -135,10 +140,8 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                             {
                                 if (tempTimes > 0)
                                 {
-                                    for (int i = 0; i < tempTimes; i++)
-                                    {
+                                    for (var i = 0; i < tempTimes; i++)
                                         yourStaticDataSourceList[keyParameter].DataMoveNext();
-                                    }
                                     tempVaule = yourStaticDataSourceList[keyParameter].DataCurrent();
                                 }
                                 else
@@ -154,15 +157,13 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                         else
                         {
                             tempVaule = yourStaticDataSourceList[keyParameter].GetDataVaule(keyAdditionData);
-                            if (tempVaule == null)
-                            {
-                                errorMessage = DealErrorAdditionData();
-                            }
+                            if (tempVaule == null) errorMessage = DealErrorAdditionData();
                         }
 
                         yourSourceData = yourSourceData.Replace(splitStr + tempKeyVaule + splitStr, tempVaule);
                         yourDataResultCollection.MyAdd(tempKeyVaule, tempVaule);
                     }
+
                     #endregion
 
                     else
@@ -173,14 +174,13 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                         yourDataResultCollection.MyAdd(tempKeyVaule, tempVaule);
                     }
                 }
-
             }
 
             return yourSourceData;
         }
 
         /// <summary>
-        /// 处理ParametersData，解析静态数据名及其参数
+        ///     处理ParametersData，解析静态数据名及其参数
         /// </summary>
         /// <param name="souceData">souce parameter data 原数据</param>
         /// <param name="additionData">返回辅助参数数据，若没有或无法解析返回null</param>
@@ -193,7 +193,7 @@ namespace FreeHttp.AutoTest.ParameterizationContent
             {
                 if (souceData.EndsWith(")"))
                 {
-                    int startIndex = souceData.LastIndexOf('(');
+                    var startIndex = souceData.LastIndexOf('(');
                     if (startIndex > 0)
                     {
                         parametersData = souceData.Remove(startIndex);
@@ -209,16 +209,16 @@ namespace FreeHttp.AutoTest.ParameterizationContent
                     parametersData = souceData;
                 }
             }
+
             return parametersData;
         }
-
     }
 
     public class MyConfiguration
     {
         //◎●◐◑◒◓◔◕◖◗▼▲
-        public static string ParametersDataSplitStr = "*#";                                                     //参数化数据分隔符
-        public static string ParametersExecuteSplitStr = "`";                                                   //参数再运算风格符
+        public static string ParametersDataSplitStr = "*#"; //参数化数据分隔符
+        public static string ParametersExecuteSplitStr = "`"; //参数再运算风格符
         public static string CaseShowTargetAndContent = "➤";
         public static string CaseShowCaseNodeStart = "◆";
         public static string CaseShowJumpGotoNode = "▼";

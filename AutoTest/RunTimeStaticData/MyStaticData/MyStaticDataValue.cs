@@ -1,36 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
 {
-     [DataContract]
+    [DataContract]
     public class MyStaticDataValue : IRunTimeStaticData
     {
-         [DataMember]
-        private string defaultValue;
-
-         [DataMember]
-        public string OriginalConnectString { get;private set; }
-
-
-        public string RunTimeStaticDataTypeAlias
-        {
-            get { return "staticData_value"; }
-        }
-        public CaseStaticDataType RunTimeStaticDataType
-        {
-            get { return CaseStaticDataType.caseStaticData_vaule; }
-        }
+        [DataMember] private string defaultValue;
 
 
         public MyStaticDataValue(string yourVaule)
         {
-            defaultValue=OriginalConnectString=yourVaule;
+            defaultValue = OriginalConnectString = yourVaule;
         }
+
+        [DataMember] public string OriginalConnectString { get; private set; }
+
+
+        public string RunTimeStaticDataTypeAlias => "staticData_value";
+
+        public CaseStaticDataType RunTimeStaticDataType => CaseStaticDataType.caseStaticData_vaule;
 
 
         public object Clone()
@@ -52,19 +40,18 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
 
         public void DataReset()
         {
-            
         }
 
 
         public bool DataSet(string expectData)
         {
-            if (expectData!=null)
+            if (expectData != null)
             {
                 defaultValue = expectData;
                 return true;
             }
+
             return false;
         }
-
     }
 }

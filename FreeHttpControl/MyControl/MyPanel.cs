@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Forms;
 
 namespace FreeHttp.FreeHttpControl
 {
-    class MyPanel : System.Windows.Forms.Panel
+    internal class MyPanel : Panel
     {
         public MyPanel()
         {
             //this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint |System.Windows.Forms.ControlStyles.AllPaintingInWmPaint |System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer,true);
-            this.SetStyle(System.Windows.Forms.ControlStyles.DoubleBuffer | System.Windows.Forms.ControlStyles.OptimizedDoubleBuffer | System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(
+                ControlStyles.DoubleBuffer | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint,
+                true);
             UpdateStyles();
         }
     }

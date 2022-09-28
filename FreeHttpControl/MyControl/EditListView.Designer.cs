@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditListView));
-            this.lv_dataList = new System.Windows.Forms.ListView();
+            this.ListDataView = new System.Windows.Forms.ListView();
             this.columnHeader_data = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pictureBox_add = new System.Windows.Forms.PictureBox();
             this.pictureBox_remove = new System.Windows.Forms.PictureBox();
@@ -39,20 +39,20 @@
             // 
             // lv_dataList
             // 
-            this.lv_dataList.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.lv_dataList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lv_dataList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ListDataView.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.ListDataView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ListDataView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader_data});
-            this.lv_dataList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lv_dataList.FullRowSelect = true;
-            this.lv_dataList.LabelEdit = true;
-            this.lv_dataList.Location = new System.Drawing.Point(0, 0);
-            this.lv_dataList.Name = "lv_dataList";
-            this.lv_dataList.Size = new System.Drawing.Size(379, 134);
-            this.lv_dataList.TabIndex = 49;
-            this.lv_dataList.UseCompatibleStateImageBehavior = false;
-            this.lv_dataList.View = System.Windows.Forms.View.Details;
-            this.lv_dataList.DoubleClick += new System.EventHandler(this.lv_dataList_DoubleClick);
+            this.ListDataView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ListDataView.FullRowSelect = true;
+            this.ListDataView.LabelEdit = true;
+            this.ListDataView.Location = new System.Drawing.Point(0, 0);
+            this.ListDataView.Name = "ListDataView";
+            this.ListDataView.Size = new System.Drawing.Size(379, 134);
+            this.ListDataView.TabIndex = 49;
+            this.ListDataView.UseCompatibleStateImageBehavior = false;
+            this.ListDataView.View = System.Windows.Forms.View.Details;
+            this.ListDataView.DoubleClick += new System.EventHandler(this.lv_dataList_DoubleClick);
             // 
             // columnHeader_data
             // 
@@ -97,7 +97,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pictureBox_add);
             this.Controls.Add(this.pictureBox_remove);
-            this.Controls.Add(this.lv_dataList);
+            this.Controls.Add(this.ListDataView);
             this.Name = "EditListView";
             this.Size = new System.Drawing.Size(379, 134);
             this.Load += new System.EventHandler(this.EditListView_Load);
@@ -112,7 +112,6 @@
 
         private System.Windows.Forms.PictureBox pictureBox_add;
         private System.Windows.Forms.PictureBox pictureBox_remove;
-        private System.Windows.Forms.ListView lv_dataList;
         private System.Windows.Forms.ColumnHeader columnHeader_data;
     }
 }

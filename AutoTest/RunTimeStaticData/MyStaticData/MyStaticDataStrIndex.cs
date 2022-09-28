@@ -1,42 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
 {
     /// <summary>
-    /// 为StaticData提定长字符串型数字索引支持【IRunTimeStaticData】
+    ///     为StaticData提定长字符串型数字索引支持【IRunTimeStaticData】
     /// </summary>
-     [DataContract]
+    [DataContract]
     public class MyStaticDataStrIndex : IRunTimeStaticData
     {
-         [DataMember]
-        private bool isNew;
-         [DataMember]
-        private long dataIndex;
-         [DataMember]
-        private long defaultStart;
-         [DataMember]
-        private long defaultEnd;
-         [DataMember]
-        private long defaultStep;
-         [DataMember]
-        private int strLen;
+        [DataMember] private long dataIndex;
 
-         [DataMember]
-        public string OriginalConnectString { get; private set; }
-        public string RunTimeStaticDataTypeAlias
-        {
-            get { return "staticData_strIndex"; }
-        }
+        [DataMember] private long defaultEnd;
 
-        public CaseStaticDataType RunTimeStaticDataType
-        {
-            get { return CaseStaticDataType.caseStaticData_strIndex; }
-        }
+        [DataMember] private long defaultStart;
+
+        [DataMember] private long defaultStep;
+
+        [DataMember] private bool isNew;
+
+        [DataMember] private int strLen;
+
         public MyStaticDataStrIndex(long yourStart, long yourEnd, long yourStep, int yourStrLen)
         {
             isNew = true;
@@ -46,29 +30,22 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
             strLen = yourStrLen;
         }
 
-        public MyStaticDataStrIndex(long yourStart, long yourEnd, long yourStep, int yourStrLen, string originalConnectString)
+        public MyStaticDataStrIndex(long yourStart, long yourEnd, long yourStep, int yourStrLen,
+            string originalConnectString)
             : this(yourStart, yourEnd, yourStep, yourStrLen)
         {
             OriginalConnectString = originalConnectString;
         }
 
+        [DataMember] public string OriginalConnectString { get; private set; }
+
+        public string RunTimeStaticDataTypeAlias => "staticData_strIndex";
+
+        public CaseStaticDataType RunTimeStaticDataType => CaseStaticDataType.caseStaticData_strIndex;
+
         public object Clone()
         {
             return new MyStaticDataStrIndex(defaultStart, defaultEnd, defaultStep, strLen);
-        }
-
-        private string GetLenStr(long yourLeng)
-        {
-            string outStr = yourLeng.ToString();
-            int distinction = strLen - outStr.Length;
-            if (distinction > 0)
-            {
-                for (int i = 0; i < distinction; i++)
-                {
-                    outStr = "0" + outStr;
-                }
-            }
-            return outStr;
         }
 
         public string DataCurrent()
@@ -76,7 +53,7 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
             return GetLenStr(dataIndex);
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public string DataMoveNext()
         {
             if (isNew)
@@ -84,15 +61,14 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
                 isNew = false;
                 return GetLenStr(dataIndex);
             }
+
             if (dataIndex >= defaultEnd)
             {
                 DataReset();
                 return DataMoveNext();
             }
-            else
-            {
-                dataIndex += defaultStep;
-            }
+
+            dataIndex += defaultStep;
             return GetLenStr(dataIndex);
         }
 
@@ -108,16 +84,23 @@ namespace FreeHttp.AutoTest.RunTimeStaticData.MyStaticData
         {
             long tempData;
             if (long.TryParse(expectData, out tempData))
-            {
                 if (tempData >= defaultStart && tempData <= defaultEnd)
                 {
                     dataIndex = tempData;
                     return true;
                 }
-            }
+
             return false;
         }
-        
-    }
 
+        private string GetLenStr(long yourLeng)
+        {
+            var outStr = yourLeng.ToString();
+            var distinction = strLen - outStr.Length;
+            if (distinction > 0)
+                for (var i = 0; i < distinction; i++)
+                    outStr = "0" + outStr;
+            return outStr;
+        }
+    }
 }

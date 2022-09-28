@@ -125,7 +125,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAABm
-        CgAAAk1TRnQBSQFMAgEBBQEAAegBEwHoARMBEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
+        CgAAAk1TRnQBSQFMAgEBBQEAASgBFAEoARQBEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
         AwABQAMAASADAAEBAQABCAYAAQgYAAGAAgABgAMAAoABAAGAAwABgAEAAYABAAKAAgADwAEAAcAB3AHA
         AQAB8AHKAaYBAAEzBQABMwEAATMBAAEzAQACMwIAAxYBAAMcAQADIgEAAykBAANVAQADTQEAA0IBAAM5
         AQABgAF8Af8BAAJQAf8BAAGTAQAB1gEAAf8B7AHMAQABxgHWAe8BAAHWAucBAAGQAakBrQIAAf8BMwMA
@@ -1106,7 +1106,7 @@ Response Replace : creat a response replace rule , it will replace all the http 
   <data name="changeSessionEncodingToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGHRF
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA68AAAOvAGVvHJJAAAAGHRF
         WHRTb2Z0d2FyZQBwYWludC5uZXQgNC4wLjVlhTJlAAAQuklEQVR4Xu2dC5AcRR3Gh907CG8BeYgIKCCo
         oDwUUXwjCFKIgEFUIBDCzc4lByKICAVRoERFCpCoJY8CSlEBoaDEEkGNSOSS3E7vJRgeCRARJCAEhDwk
         Cbn49e6f5DL7v7ued8/s/6v6Vapy01/3zH4z0zPT0+OIRCKRSCQSiUQikUgkEolEIpFIJBKJ0pQ3d6su
@@ -1185,7 +1185,7 @@ Response Replace : creat a response replace rule , it will replace all the http 
   <data name="independentWindowToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAACfZJREFUeF7tnV+I
+        vAAADrwBlbxySQAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAACfZJREFUeF7tnV+I
         HVcdgPOgLf7DnbmbptU8FFGEWhWxaqKlFIsULSoWg/qmLQoFHzQUfNSXPkgkSrIzs2t8FJFFUEGpQUIe
         qoVAFQINyd4zdxNqUkMN2oZorVLiOdffhGTu2ftvzpk599zvg4+U3Jk5vzP3S3K3u3t3FwAAAAAAAAAA
         AAAAAAAAAAAsAZtnblspzt6drqv9K0fVg4jDFnQTpg2pJGxWNy7clebqYJr1n9G/Xkcc49NJoZ4wzUg+
@@ -1849,10 +1849,11 @@ Response Replace : creat a response replace rule , it will replace all the http 
   </data>
   <data name="cb_macthMode.ToolTip" xml:space="preserve">
     <value>Methods that match HTTP
-Contain     : when the url contain the targer value it will match success
-StartWith   :when the url start with the targer value it will match success
-Is              :when the url is the targer value it will match success
-Regex       :when the url regex  the targer value it will match success
+Contain     : when the url contain the target value it will match success
+StartWith   :when the url start with the target value it will match success
+Is              :when the url is the target value it will match success
+Regex       :when the url regex  the target value it will match success
+UAContain       :when the user-agent contain the target value it will match success
 AllPass      :all url will match success</value>
   </data>
   <data name="pb_addRequestRule.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

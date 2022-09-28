@@ -1,54 +1,34 @@
 ﻿//#define NET4_5UP
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FreeHttp.WebService.HttpServer
 {
     public class MyHttpListener
     {
-        public class HttpListenerMessageEventArgs : EventArgs
-        {
-            public bool IsErrorMessage { get; set; }
-            public string Message{ get; set; }
-            public HttpListenerMessageEventArgs(bool isErrorMessage, string message)
-            {
-                IsErrorMessage = isErrorMessage;
-                Message = message;
-            }
-        }
+        private readonly HttpListener listener;
 
-        HttpListener listener;
-        public event EventHandler<HttpListenerMessageEventArgs> OnGetHttpListenerMessage;
         public MyHttpListener()
         {
-            if (!HttpListener.IsSupported)
-            {
-                return;
-            }
+            if (!HttpListener.IsSupported) return;
             listener = new HttpListener();
         }
 
-        public bool IsStart
-        {
-            get { return listener == null ? false : listener.IsListening; }
-        }
+        public bool IsStart => listener == null ? false : listener.IsListening;
+
+        public event EventHandler<HttpListenerMessageEventArgs> OnGetHttpListenerMessage;
 
         public bool Start(string prefixes)
         {
-            return Start(new string[] { prefixes },true);
+            return Start(new[] { prefixes }, true);
         }
-        public bool Start(string[] prefixesArray ,bool isClear)
+
+        public bool Start(string[] prefixesArray, bool isClear)
         {
-            
-            if (!HttpListener.IsSupported)
-            {
-                throw new Exception("not supported");
-            }
-           
+            if (!HttpListener.IsSupported) throw new Exception("not supported");
+
             //listener.Prefixes.Add("http://localhost:9998/");
             //listener.Prefixes.Add("https://localhost:44399/");
             //listener.Prefixes.Add("https://*:443/");
@@ -56,14 +36,8 @@ namespace FreeHttp.WebService.HttpServer
             //listener.Prefixes.Add("https://*:9996/test/");
             try
             {
-                if (isClear)
-                {
-                    listener.Prefixes.Clear();
-                }
-                foreach(var prefixes in prefixesArray)
-                {
-                    listener.Prefixes.Add(prefixes);
-                }
+                if (isClear) listener.Prefixes.Clear();
+                foreach (var prefixes in prefixesArray) listener.Prefixes.Add(prefixes);
             }
             catch (Exception ex)
             {
@@ -79,23 +53,14 @@ namespace FreeHttp.WebService.HttpServer
             {
                 throw ex;
             }
-#if NET4_5UP
             ListenerAsync();
             return true;
-#endif
 
-#if NET4
-            System.Threading.Thread ListenerThread = new System.Threading.Thread(new System.Threading.ThreadStart(ListenerWorker));
-            ListenerThread.Name = "ListenerThread";
-            ListenerThread.Priority = System.Threading.ThreadPriority.Normal;
-            ListenerThread.IsBackground = true;
-            ListenerThread.Start();
-#endif
         }
 
         public void Close()
         {
-            if (listener != null )
+            if (listener != null)
             {
                 Stop();
                 listener.Close();
@@ -104,62 +69,52 @@ namespace FreeHttp.WebService.HttpServer
 
         public void Stop()
         {
-            if (listener != null && listener.IsListening)
-            {
-                listener.Stop();
-            }
+            if (listener != null && listener.IsListening) listener.Stop();
         }
-#if NET4_5UP
+
         private async void ListenerAsync()
         {
             HttpListenerContext context;
-            string responseString = "Hello FreeHttp";
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+            var responseString = "Hello FreeHttp";
+            var buffer = Encoding.UTF8.GetBytes(responseString);
             while (listener.IsListening)
-            {
                 try
                 {
                     context = await listener.GetContextAsync();
-                    HttpListenerRequest request = context.Request;
-                    HttpListenerResponse response = context.Response;
+                    var request = context.Request;
+                    var response = context.Response;
                     response.ContentLength64 = buffer.Length;
-                    System.IO.Stream output = response.OutputStream;
+                    var output = response.OutputStream;
                     await output.WriteAsync(buffer, 0, buffer.Length);
                     output.Close();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    if(!IsStart)
+                    if (!IsStart)
                     {
                         return;
                     }
-                    else
-                    {
-                        if(OnGetHttpListenerMessage!=null)
-                        {
-                            this.OnGetHttpListenerMessage(this, new HttpListenerMessageEventArgs(true, ex.Message));
-                        }
-                    }
+
+                    if (OnGetHttpListenerMessage != null)
+                        OnGetHttpListenerMessage(this, new HttpListenerMessageEventArgs(true, ex.Message));
                 }
-                
-            }
         }
-#endif
+
         private void ListenerWorker()
         {
-            while(listener.IsListening)
+            while (listener.IsListening)
             {
                 // Note: The GetContext method blocks while waiting for a request. 
-                HttpListenerContext context = listener.GetContext();
-                HttpListenerRequest request = context.Request;
+                var context = listener.GetContext();
+                var request = context.Request;
                 // Obtain a response object.
-                HttpListenerResponse response = context.Response;
+                var response = context.Response;
                 // Construct a response.
-                string responseString = "ok";
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                var responseString = "ok";
+                var buffer = Encoding.UTF8.GetBytes(responseString);
                 // Get a response stream and write the response to it.
                 response.ContentLength64 = buffer.Length;
-                System.IO.Stream output = response.OutputStream;
+                var output = response.OutputStream;
                 output.Write(buffer, 0, buffer.Length);
                 // You must close the output stream.
                 output.Close();
@@ -167,5 +122,16 @@ namespace FreeHttp.WebService.HttpServer
             }
         }
 
+        public class HttpListenerMessageEventArgs : EventArgs
+        {
+            public HttpListenerMessageEventArgs(bool isErrorMessage, string message)
+            {
+                IsErrorMessage = isErrorMessage;
+                Message = message;
+            }
+
+            public bool IsErrorMessage { get; set; }
+            public string Message { get; set; }
+        }
     }
 }
